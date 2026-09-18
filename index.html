@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="bn" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Easy Poster Bot</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkbg: '#0B1120', 
+                        darkcard: '#162032', 
+                        darkborder: '#233554',
+                        bkash: '#E2136E',
+                        nagad: '#F7941D',
+                        gp: '#00A3E0',
+                        robi: '#ED1C24'
+                    } 
+                } 
+            }
+        }
+    </script>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 🌈 প্রিমিয়াম কালার থিম */
+        .color-gray  { background: #F1F5F9; color: #1E293B; border: 1.5px solid #CBD5E1; }
+        .color-red   { background: linear-gradient(135deg, #FF416C, #FF4B2B); color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(255, 65, 108, 0.35); }
+        .color-green { background: linear-gradient(135deg, #11998e, #38ef7d); color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(56, 239, 125, 0.35); }
+        .color-blue  { background: linear-gradient(135deg, #0088CC, #00C6FF); color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(0, 198, 255, 0.35); }
+        .color-pink  { background: linear-gradient(135deg, #E2136E, #FF5E97); color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(226, 19, 110, 0.35); }
+        .color-orange{ background: linear-gradient(135deg, #F7941D, #FF6A00); color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(247, 148, 29, 0.35); }
+
+        .selected-ring { outline: 3.5px solid #0088CC; outline-offset: 3px; transform: scale(1.04); }
+
+        /* কার্ড হোভার ও অ্যানিমেশন */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .glass-card {
+            background: rgba(22, 32, 50, 0.92);
+            border: 1px solid rgba(35, 53, 84, 0.85);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .format-card { transition: all 0.2s ease; border: 2px solid #E2E8F0; }
+        .format-card.active { border-color: #0088CC; background: linear-gradient(135deg, #EBF5FB, #E0F2FE); transform: scale(1.02); }
+        .dark .format-card { border-color: #334155; background-color: #1E293B; }
+        .dark .format-card.active { border-color: #0088CC; background: linear-gradient(135deg, #1E3A5F, #0F2A4A); }
+        .format-card.active span { color: #0088CC; font-weight: 900; }
+
+        .quick-time-pill.active { 
+            background: linear-gradient(135deg, #0088CC, #00B4DB); 
+            color: #FFFFFF; 
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(0, 136, 204, 0.35);
+        }
+        
+        .ios-toggle:checked + .ios-toggle-bg { background: linear-gradient(135deg, #0088CC, #00C6FF); }
+        .ios-toggle:checked + .ios-toggle-bg .ios-toggle-dot { transform: translateX(22px); }
+
+        .tg-spoiler-box { background-color: #475569; color: transparent; border-radius: 4px; padding: 0 4px; cursor: pointer; transition: all 0.2s; user-select: none; }
+        .tg-spoiler-box.revealed { background-color: rgba(0,0,0,0.08); color: inherit; }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(0, 136, 204, 0.4)); }
+            50% { transform: scale(1.02); filter: drop-shadow(0 0 16px rgba(0, 136, 204, 0.7)); }
+        }
+        .btn-glow-pulse { animation: pulseGlow 3s infinite ease-in-out; }
+
+        @keyframes popUp { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .animate-pop-up { animation: popUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        @keyframes slideRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .drawer-slide-right { animation: slideRight 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-slide-up { animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="bg-[#F0F4F8] dark:bg-darkbg text-gray-900 dark:text-gray-100 pb-36 select-none antialiased transition-colors duration-200">
+
+    <!-- ================= ১. অ্যাপ টপ বার ================= -->
+    <header class="bg-white/90 dark:bg-darkcard/90 backdrop-blur-md sticky top-0 z-30 px-4 py-3 border-b border-gray-200/80 dark:border-darkborder shadow-sm flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#0088CC] via-[#00C6FF] to-[#0072FF] flex items-center justify-center text-white text-lg shadow-lg shadow-blue-500/30">
+                <i class="fa-solid fa-pen-nib"></i>
+            </div>
+            <div>
+                <h1 class="font-black text-base leading-tight bg-gradient-to-r from-[#0088CC] via-purple-600 to-[#E2136E] bg-clip-text text-transparent">
+                    🖊️ Easy Poster Bot
+                </h1>
+                <p class="text-[10px] text-gray-500 dark:text-gray-400 font-bold flex items-center space-x-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>Pro Telegram WebApp</span>
+                </p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="toggleDarkMode()" id="theme-btn" class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-yellow-400 flex items-center justify-center text-sm active:scale-90 transition border border-gray-200 dark:border-darkborder">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <button onclick="openMenuDrawer()" class="w-9 h-9 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:bg-slate-800 text-[#0088CC] dark:text-sky-400 flex items-center justify-center text-base active:scale-90 transition border border-blue-200/60 dark:border-darkborder">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= মেইন কন্টেইনার ================= -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
+
+        <!-- ১. চ্যানেল সিলেকশন কার্ড (আধুনিক কাস্টম ড্রপডাউন) -->
+        <div class="glass-card rounded-[26px] p-4 border-l-4 border-l-[#0088CC] space-y-2.5">
+            <div class="flex justify-between items-center">
+                <div>
+                    <label class="text-[11px] font-black text-gray-500 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i class="fa-solid fa-bullhorn text-[#0088CC]"></i>
+                        <span>টার্গেট টেলিগ্রাম চ্যানেল</span>
+                    </label>
+                    <p class="text-[10px] text-gray-400 font-bold">যে চ্যানেলে আপনার পোস্ট পাঠাতে চান</p>
+                </div>
+                <button onclick="openModal('modal-channel')" class="text-xs font-black text-[#0088CC] hover:underline bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 rounded-xl transition flex items-center space-x-1">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <span>ম্যানেজ</span>
+                </button>
+            </div>
+
+            <!-- 🌟 কাস্টম প্রিমিয়াম চ্যানেল ড্রপডাউন ট্রিগার -->
+            <div onclick="openModal('modal-channel-picker')" class="w-full bg-[#F8FAFC] dark:bg-slate-800/90 border-2 border-gray-200 dark:border-darkborder hover:border-[#0088CC] rounded-2xl p-3.5 flex items-center justify-between cursor-pointer transition shadow-sm active:scale-98">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <div id="selected-channel-icon" class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-slate-700 text-[#0088CC] flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-bullhorn"></i>
+                    </div>
+                    <div class="truncate">
+                        <span id="selected-channel-title" class="text-xs font-black text-gray-800 dark:text-gray-100 block truncate">📢 চ্যানেল নির্বাচন করুন...</span>
+                        <span id="selected-channel-user" class="text-[10px] text-gray-400 font-bold block">ক্লিক করে চ্যানেল পছন্দ করুন</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+            </div>
+            <input type="hidden" id="target-channel" value="">
+        </div>
+
+        <!-- ২. পোস্ট টেক্সট ও ৩টি সহজবোধ্য অ্যাকশন বোতাম -->
+        <div class="glass-card rounded-[26px] p-4 space-y-3.5 border-l-4 border-l-purple-500">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-xs font-black text-gray-500 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i class="fa-regular fa-pen-to-square text-purple-500"></i>
+                        <span>পোস্ট বার্তা (ঐচ্ছিক)</span>
+                    </span>
+                    <p class="text-[10px] text-gray-400 font-bold">পোস্টের লেখা ও ক্যাপশন লিখুন</p>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                    <button onclick="cleanAllFormattingTags()" title="ফরম্যাট মুছুন" class="text-[11px] font-bold text-gray-500 hover:text-red-500 bg-gray-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl transition active:scale-95">
+                        <i class="fa-solid fa-eraser mr-1"></i>ক্লিন
+                    </button>
+                    <button onclick="aiEnhanceText()" class="text-xs font-black bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-500 text-white px-3 py-1 rounded-xl shadow-md shadow-purple-500/25 active:scale-95 transition flex items-center space-x-1">
+                        <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                        <span>✨ AI Enhance</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ✍️ স্মার্ট ফরম্যাটিং টুলবার -->
+            <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-xs">
+                <button onclick="applySmartFormatting('<b>', '</b>')" class="px-3 py-1.5 bg-gray-100 dark:bg-slate-800 font-black rounded-xl active:scale-90 transition">B</button>
+                <button onclick="applySmartFormatting('<i>', '</i>')" class="px-3 py-1.5 bg-gray-100 dark:bg-slate-800 italic font-black rounded-xl active:scale-90 transition">I</button>
+                <button onclick="applySmartFormatting('<tg-spoiler>', '</tg-spoiler>')" class="px-2.5 py-1.5 bg-gray-100 dark:bg-slate-800 font-bold rounded-xl active:scale-90 transition">🙈 স্পয়লার</button>
+                <button onclick="applySmartFormatting('<code>', '</code>')" class="px-2.5 py-1.5 bg-gray-100 dark:bg-slate-800 font-mono font-bold rounded-xl active:scale-90 transition">&lt;/&gt; কোড</button>
+                <button onclick="applySmartFormatting('<s>', '</s>')" class="px-3 py-1.5 bg-gray-100 dark:bg-slate-800 line-through font-bold rounded-xl active:scale-90 transition">S</button>
+                <button onclick="applySmartFormatting('<blockquote>', '</blockquote>')" class="px-2.5 py-1.5 bg-gray-100 dark:bg-slate-800 font-bold rounded-xl active:scale-90 transition">❝ কোট</button>
+                <button onclick="insertHyperlink()" class="px-2.5 py-1.5 bg-blue-50 dark:bg-blue-950 text-[#0088CC] font-bold rounded-xl active:scale-90 transition">🔗 লিংক</button>
+            </div>
+            
+            <textarea id="post-text" rows="3" placeholder="পোস্টের ক্যাপশন বা মূল টেক্সট এখানে লিখুন..." class="w-full bg-[#F8FAFC] dark:bg-slate-800/90 border-2 border-gray-200 dark:border-darkborder focus:border-purple-500 rounded-2xl p-3.5 text-xs font-medium outline-none resize-none leading-relaxed transition text-gray-800 dark:text-gray-100 shadow-inner"></textarea>
+
+            <!-- ছবি প্রিভিউ ও কাস্টম ওয়াটারমার্ক ইনপুট -->
+            <div id="media-preview-container" class="hidden space-y-2">
+                <div class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-darkborder bg-gray-50 shadow-md">
+                    <img id="media-preview-img" src="" class="w-full h-44 object-cover">
+                    <button onclick="removeMedia()" class="absolute top-2 right-2 bg-black/75 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs active:scale-90 shadow-md transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="bg-gradient-to-r from-blue-50/90 to-indigo-50/90 dark:from-slate-800 dark:to-slate-800 p-3 rounded-2xl space-y-2 border border-blue-200/50 dark:border-darkborder">
+                    <label class="text-[11px] font-black text-blue-900 dark:text-blue-400 flex items-center justify-between">
+                        <span>🏷️ ছবিতে নিজের ওয়াটারমার্ক লিখুন:</span>
+                        <span class="text-[10px] text-gray-400">ঐচ্ছিক</span>
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="watermark-input" placeholder="যেমন: @EasyLiveChatBot" oninput="applyCustomWatermark()" class="flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-darkborder rounded-xl p-2.5 text-xs font-bold outline-none text-gray-800 dark:text-gray-100">
+                        <button onclick="applyCustomWatermark()" class="bg-[#0088CC] text-white px-3.5 py-2.5 rounded-xl text-xs font-bold active:scale-95 shadow">যুক্ত</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🌈 স্পষ্ট এবং সহজবোধ্য ৩টি বোতাম -->
+            <div class="space-y-1.5 pt-1">
+                <div class="grid grid-cols-3 gap-2">
+                    <!-- ১. ছবি যোগ -->
+                    <label class="bg-gradient-to-r from-[#00A3E0] to-[#0088CC] text-white rounded-2xl py-3 px-2 text-center cursor-pointer active:scale-95 transition flex flex-col items-center justify-center shadow-lg shadow-sky-500/20">
+                        <i class="fa-regular fa-image text-lg mb-1"></i>
+                        <span class="text-xs font-black" id="media-label">ছবি যোগ</span>
+                        <span class="text-[9px] text-white/80 font-bold">পোস্টে ছবি দিন</span>
+                        <input type="file" id="media-input" accept="image/*" class="hidden" onchange="handleMedia(event)">
+                    </label>
+
+                    <!-- ২. + বাটন -->
+                    <button onclick="openModal('modal-button')" class="bg-gradient-to-r from-[#F7941D] to-[#FF5722] text-white py-3 px-2 rounded-2xl text-center active:scale-95 transition shadow-lg shadow-orange-500/20 flex flex-col items-center justify-center">
+                        <i class="fa-solid fa-link text-lg mb-1"></i>
+                        <span class="text-xs font-black">লিংক বাটন</span>
+                        <span class="text-[9px] text-white/80 font-bold">+ বাটন তৈরি</span>
+                    </button>
+
+                    <!-- ৩. রিঅ্যাকশন বাটন -->
+                    <button onclick="openModal('modal-reaction')" class="bg-gradient-to-r from-[#E2136E] to-[#FF4B8B] text-white py-3 px-2 rounded-2xl text-center active:scale-95 transition shadow-lg shadow-pink-500/20 flex flex-col items-center justify-center">
+                        <i class="fa-solid fa-heart text-lg mb-1"></i>
+                        <span class="text-xs font-black">রিঅ্যাকশন</span>
+                        <span class="text-[9px] text-white/80 font-bold">+ ইমোজি কাউন্টার</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ৩. তৈরি করা বাটনসমূহ (রঙিন চিপস) -->
+        <div class="glass-card rounded-[26px] p-4 space-y-3 border-l-4 border-l-emerald-500">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xs font-black text-gray-500 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i class="fa-solid fa-layer-group text-emerald-500"></i>
+                        <span>তৈরি করা বাটন ও রিঅ্যাকশন</span>
+                    </h2>
+                    <p class="text-[10px] text-gray-400 font-bold">এখানে যোগ করা সমস্ত বাটনের তালিকা থাকবে</p>
+                </div>
+                <span id="total-btns-count" class="text-[11px] font-black text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">০টি বাটন</span>
+            </div>
+
+            <div id="added-buttons-chip-list" class="flex flex-wrap gap-2 pt-1">
+                <p class="text-xs text-gray-400 font-bold py-1">কোনো বাটন যোগ করা হয়নি। উপরে 'লিংক বাটন' বা 'রিঅ্যাকশন'-এ চাপুন।</p>
+            </div>
+        </div>
+
+        <!-- ৪. লিংক বাটন সাজানোর ফরম্যাট -->
+        <div class="glass-card rounded-[26px] p-4 space-y-3">
+            <div>
+                <h2 class="text-xs font-black text-gray-500 uppercase tracking-wider flex items-center space-x-1.5">
+                    <i class="fa-solid fa-table-cells-large text-[#0088CC]"></i>
+                    <span>লিংক বাটন সাজানোর ফরম্যাট</span>
+                </h2>
+                <p class="text-[10px] text-gray-400 font-bold">লিংক বাটনগুলো যেভাবে চ্যানেলে সাজানো থাকবে</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+                <div onclick="switchButtonLayout('1col')" id="format-1col" class="format-card active bg-[#F8FAFC] rounded-2xl p-3 cursor-pointer">
+                    <span class="text-xs font-black text-gray-800 dark:text-gray-200">১টি করে নিচে নিচে</span>
+                </div>
+                <div onclick="switchButtonLayout('2col')" id="format-2col" class="format-card bg-[#F8FAFC] rounded-2xl p-3 cursor-pointer">
+                    <span class="text-xs font-black text-gray-800 dark:text-gray-200">২টি করে পাশাপাশি</span>
+                </div>
+                <div onclick="switchButtonLayout('3col')" id="format-3col" class="format-card bg-[#F8FAFC] rounded-2xl p-3 cursor-pointer">
+                    <span class="text-xs font-black text-gray-800 dark:text-gray-200">৩টি করে পাশাপাশি</span>
+                </div>
+                <div onclick="switchButtonLayout('1plus2')" id="format-1plus2" class="format-card bg-[#F8FAFC] rounded-2xl p-3 cursor-pointer">
+                    <span class="text-xs font-black text-gray-800 dark:text-gray-200">১টি বড় + ২টি ছোট</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ৫. রিঅ্যাকশন বাটন লেআউট -->
+        <div class="glass-card rounded-[26px] p-4 space-y-3">
+            <div>
+                <h2 class="text-xs font-black text-gray-500 uppercase tracking-wider flex items-center space-x-1.5">
+                    <i class="fa-regular fa-face-smile text-[#E2136E]"></i>
+                    <span>রিঅ্যাকশন সাজানোর ফরম্যাট</span>
+                </h2>
+                <p class="text-[10px] text-gray-400 font-bold">ইমোজিগুলো যেভাবে লাইনে বা গ্রিডে থাকবে</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="switchReactionLayout('row')" id="react-layout-row" class="p-2.5 rounded-xl text-xs font-black border-2 border-[#E2136E] bg-pink-50 dark:bg-pink-950/50 text-[#E2136E] transition">১ লাইনে সব</button>
+                <button onclick="switchReactionLayout('2col')" id="react-layout-2col" class="p-2.5 rounded-xl text-xs font-black border-2 border-gray-200 dark:border-darkborder bg-[#F8FAFC] dark:bg-slate-800 text-gray-700 dark:text-gray-300 transition">২টি করে গ্রিড</button>
+                <button onclick="switchReactionLayout('1plus2')" id="react-layout-1plus2" class="p-2.5 rounded-xl text-xs font-black border-2 border-gray-200 dark:border-darkborder bg-[#F8FAFC] dark:bg-slate-800 text-gray-700 dark:text-gray-300 transition">১টি বড় + ২টি ছোট</button>
+            </div>
+        </div>
+
+        <!-- ৬. প্রিমিয়াম টেলিগ্রাম লাইভ প্রিভিউ -->
+        <div class="glass-card rounded-[26px] p-4 space-y-3">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-xs font-black text-gray-500 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i class="fa-solid fa-eye text-[#0088CC]"></i>
+                        <span>লাইভ টেলিগ্রাম প্রিভিউ</span>
+                    </span>
+                    <p class="text-[10px] text-gray-400 font-bold">চ্যানেলে পোস্টটি ঠিক যেমন দেখতে লাগবে</p>
+                </div>
+                <span id="current-layout-badge" class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">Live View</span>
+            </div>
+
+            <div class="bg-gradient-to-b from-[#6A8CA7] to-[#517693] p-3.5 rounded-3xl space-y-2 shadow-inner">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 space-y-2 shadow-lg max-w-sm mx-auto text-gray-900 dark:text-gray-100">
+                    <img id="live-preview-img" class="w-full h-40 object-cover rounded-xl hidden shadow" src="">
+                    <div id="live-preview-text" class="text-xs font-normal whitespace-pre-wrap leading-relaxed">পোস্টের প্রিভিউ এখানে দেখা যাবে...</div>
+                    <div class="text-[10px] text-gray-400 text-right font-bold flex items-center justify-end space-x-1 pt-1">
+                        <span>👁️ 1.2K</span>
+                        <span id="live-preview-time">12:00 PM</span>
+                        <span class="text-blue-500 font-bold">✓✓</span>
+                    </div>
+                </div>
+                
+                <div id="live-preview-grid" class="space-y-1.5 max-w-sm mx-auto pt-1"></div>
+            </div>
+        </div>
+
+        <!-- ৭. কুইক মিনিট শিডিউল ও সেটিংস -->
+        <div class="glass-card rounded-[26px] p-4 space-y-3 border-l-4 border-l-amber-500">
+            <div class="flex justify-between items-center">
+                <div>
+                    <label class="font-black text-xs text-gray-700 dark:text-gray-300 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-clock text-amber-500"></i>
+                        <span>কখন পোস্ট হবে?</span>
+                    </label>
+                    <p class="text-[10px] text-gray-400 font-bold">পোস্টের সময় নির্ধারণ করুন</p>
+                </div>
+                <div class="space-x-1">
+                    <button onclick="saveCurrentDraft()" class="text-[11px] font-black bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-xl active:scale-95 transition">💾 ড্রাফট</button>
+                    <button onclick="loadSavedDraft()" class="text-[11px] font-black bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 px-2.5 py-1 rounded-xl active:scale-95 transition">📂 লোড</button>
+                </div>
+            </div>
+
+            <!-- 📌 অটো পিন সুইচ -->
+            <label class="flex justify-between items-center bg-[#F8FAFC] dark:bg-slate-800/80 p-3.5 rounded-2xl cursor-pointer shadow-sm">
+                <div>
+                    <span class="font-black text-xs text-gray-800 dark:text-gray-200 block">📌 চ্যানেলে অটো পিন (Auto Pin)</span>
+                    <span class="text-[10px] text-gray-400 font-bold">অন রাখলে পোস্টের সাথে সাথে চ্যানেলে পিন হবে</span>
+                </div>
+                <div class="relative">
+                    <input type="checkbox" id="set-pin" class="sr-only ios-toggle">
+                    <div class="w-12 h-7 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                        <div class="w-6 h-6 bg-white rounded-full absolute left-0.5 top-0.5 shadow-md ios-toggle-dot transition-transform"></div>
+                    </div>
+                </div>
+            </label>
+
+            <!-- কুইক মিনিট পিলস -->
+            <div class="grid grid-cols-3 gap-2">
+                <button type="button" onclick="setQuickTime(0, this)" class="quick-time-pill active p-2.5 rounded-xl border border-gray-200 dark:border-darkborder text-xs font-black text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 active:scale-95 transition">⚡ এখনই (Now)</button>
+                <button type="button" onclick="setQuickTime(5, this)" class="quick-time-pill p-2.5 rounded-xl border border-gray-200 dark:border-darkborder text-xs font-black text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 active:scale-95 transition">⏱️ +৫ মিনিট</button>
+                <button type="button" onclick="setQuickTime(15, this)" class="quick-time-pill p-2.5 rounded-xl border border-gray-200 dark:border-darkborder text-xs font-black text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 active:scale-95 transition">⏱️ +১৫ মিনিট</button>
+                <button type="button" onclick="setQuickTime(30, this)" class="quick-time-pill p-2.5 rounded-xl border border-gray-200 dark:border-darkborder text-xs font-black text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 active:scale-95 transition">⏱️ +৩০ মিনিট</button>
+                <button type="button" onclick="setQuickTime(60, this)" class="quick-time-pill p-2.5 rounded-xl border border-gray-200 dark:border-darkborder text-xs font-black text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 active:scale-95 transition">🕐 +১ ঘণ্টা</button>
+                <button type="button" onclick="toggleCustomDateTime(this)" class="quick-time-pill p-2.5 rounded-xl border border-gray-200 dark:border-darkborder text-xs font-black text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 active:scale-95 transition">📅 কাস্টম</button>
+            </div>
+
+            <div id="custom-dt-container" class="hidden pt-1">
+                <input type="datetime-local" id="scheduled-time" onchange="onCustomDateTimeChange()" class="w-full bg-[#F8FAFC] dark:bg-slate-800 border-2 border-gray-200 dark:border-darkborder rounded-xl p-3 text-xs font-bold outline-none text-gray-800 dark:text-gray-100">
+            </div>
+        </div>
+
+        <!-- ৮. ফাইনাল পাবলিশ বোতাম -->
+        <div class="pt-2">
+            <button onclick="publishPost()" class="btn-glow-pulse w-full bg-gradient-to-r from-[#0088CC] via-[#00A3E0] to-[#E2136E] hover:opacity-95 active:scale-98 text-white font-black py-4 rounded-2xl text-base shadow-xl shadow-blue-500/30 flex items-center justify-center space-x-2.5 transition">
+                <i class="fa-solid fa-paper-plane text-lg"></i>
+                <span id="publish-btn-text">Publish Post (পোস্ট করুন)</span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- ================= 🌟 কাস্টম চ্যানেল সিলেকশন মডাল ================= -->
+    <div id="modal-channel-picker" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-end justify-center hidden p-0">
+        <div class="bg-white dark:bg-darkcard w-full max-w-md rounded-t-[36px] p-6 space-y-4 modal-slide-up max-h-[85vh] overflow-y-auto shadow-2xl">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-darkborder">
+                <div>
+                    <h3 class="text-base font-black text-gray-900 dark:text-gray-100">📢 টার্গেট চ্যানেল বেছে নিন</h3>
+                    <p class="text-[11px] text-gray-400 font-bold">যে চ্যানেলে পোস্ট করতে চান সিলেক্ট করুন</p>
+                </div>
+                <button onclick="closeModal('modal-channel-picker')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 font-bold flex items-center justify-center active:scale-90"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+
+            <div id="picker-channel-list" class="space-y-2.5"></div>
+
+            <button onclick="closeModal('modal-channel-picker'); openModal('modal-channel');" class="w-full p-3.5 bg-blue-50 dark:bg-slate-800 border border-blue-200 dark:border-darkborder rounded-2xl flex items-center justify-center space-x-2 text-xs font-black text-[#0088CC] dark:text-sky-400 active:scale-98 transition">
+                <i class="fa-solid fa-plus-circle text-sm"></i>
+                <span>নতুন চ্যানেল যুক্ত / ম্যানেজ করুন</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= ৩-মেনু সাইড ড্রয়ার (ভিআইপি প্রোফাইল + টিউটোরিয়াল) ================= -->
+    <div id="modal-menu-drawer" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex justify-end hidden">
+        <div class="bg-white dark:bg-darkcard w-4/5 max-w-xs h-full p-5 space-y-4 drawer-slide-right flex flex-col justify-between shadow-2xl overflow-y-auto">
+            
+            <div class="space-y-3.5">
+                <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-darkborder">
+                    <span class="font-black text-base text-gray-900 dark:text-gray-100">প্রোফাইল ও মেনু</span>
+                    <button onclick="closeMenuDrawer()" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 font-bold flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- 💎 ভিআইপি গোল্ডেন প্রোফাইল কার্ড -->
+                <div class="bg-gradient-to-br from-[#0B4F8A] via-[#0088CC] to-[#E2136E] text-white p-4 rounded-3xl space-y-3 shadow-xl relative overflow-hidden border border-white/20">
+                    <div class="flex items-center space-x-3">
+                        <div class="relative">
+                            <div id="user-avatar-container" class="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-400 via-pink-400 to-yellow-200 p-0.5 shadow-lg flex items-center justify-center">
+                                <div class="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-white text-xl font-black">
+                                    <img id="user-avatar-img" class="w-full h-full object-cover hidden" src="" alt="Profile">
+                                    <span id="user-avatar-fallback"><i class="fa-solid fa-user"></i></span>
+                                </div>
+                            </div>
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white font-black">✓</div>
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-1">
+                                <h3 id="user-display-name" class="font-black text-sm truncate">User Name</h3>
+                                <i class="fa-solid fa-circle-check text-sky-300 text-xs"></i>
+                                <span id="user-premium-badge" class="hidden text-amber-300 text-xs">⭐</span>
+                            </div>
+                            <p id="user-display-username" class="text-xs text-white/90 font-black truncate">@EasyLiveChatBot</p>
+                            <button onclick="copyMyUserId()" class="inline-flex items-center space-x-1 bg-black/25 hover:bg-black/40 px-2 py-0.5 rounded-md text-[9px] font-mono text-white/90 mt-0.5 transition active:scale-95">
+                                <span id="user-display-id">ID: 00000000</span>
+                                <i class="fa-regular fa-copy text-[8px] text-white/70"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-white/15 text-center text-[10px] font-extrabold">
+                        <div class="bg-black/25 backdrop-blur-md rounded-2xl py-1.5 border border-white/10">
+                            <span id="u-stat-channels" class="block text-sm font-black text-amber-300">0</span>
+                            <span class="text-white/80 text-[9px]">চ্যানেল</span>
+                        </div>
+                        <div class="bg-black/25 backdrop-blur-md rounded-2xl py-1.5 border border-white/10">
+                            <span id="u-stat-posts" class="block text-sm font-black text-sky-300">0</span>
+                            <span class="text-white/80 text-[9px]">পোস্ট</span>
+                        </div>
+                        <div class="bg-black/25 backdrop-blur-md rounded-2xl py-1.5 border border-white/10">
+                            <span class="block text-sm font-black text-emerald-300">VIP</span>
+                            <span class="text-white/80 text-[9px]">স্ট্যাটাস</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🎬 ভিডিও টিউটোরিয়াল বোতাম (ইউটিউব লাল গ্রেডিয়েন্ট) -->
+                <a id="tutorial-link-btn" href="https://youtube.com" target="_blank" class="w-full p-3.5 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-2xl flex items-center justify-between text-xs font-black shadow-lg shadow-red-500/25 transition active:scale-98">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white"><i class="fa-brands fa-youtube text-base"></i></div>
+                        <div>
+                            <span class="block text-white text-xs font-black">🎬 ভিডিও টিউটোরিয়াল</span>
+                            <span class="text-[10px] text-white/80 font-bold">কীভাবে পোস্ট করবেন ভিডিও দেখুন</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-circle-play text-white text-base"></i>
+                </a>
+
+                <!-- 💬 সরাসরি সাপোর্ট বোতাম -->
+                <a href="https://t.me/EasyLiveChatBot" target="_blank" class="w-full p-3 bg-gradient-to-r from-pink-50 to-rose-50 dark:from-slate-800 dark:to-slate-800 border border-pink-200 dark:border-darkborder rounded-2xl flex items-center justify-between text-xs font-black text-gray-800 dark:text-gray-200 transition active:scale-98 shadow-sm">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-[#E2136E] text-white flex items-center justify-center shadow-md shadow-pink-500/20"><i class="fa-solid fa-headset text-sm"></i></div>
+                        <div>
+                            <span class="block text-gray-900 dark:text-gray-100 text-xs font-black">💬 সরাসরি সাপোর্ট</span>
+                            <span class="text-[9px] text-[#E2136E] font-bold">@EasyLiveChatBot</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[#E2136E] text-[11px]"></i>
+                </a>
+
+                <!-- 📢 অফিসিয়াল চ্যানেল বোতাম -->
+                <a href="https://t.me/Alorhawa" target="_blank" class="w-full p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:bg-slate-800 border border-blue-200 dark:border-darkborder rounded-2xl flex items-center justify-between text-xs font-black text-gray-800 dark:text-gray-200 transition active:scale-98 shadow-sm">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-[#0088CC] text-white flex items-center justify-center shadow-md shadow-blue-500/20"><i class="fa-solid fa-bullhorn text-sm"></i></div>
+                        <div>
+                            <span class="block text-gray-900 dark:text-gray-100 text-xs font-black">📢 অফিসিয়াল চ্যানেল</span>
+                            <span class="text-[9px] text-[#0088CC] font-bold">@Alorhawa</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[#0088CC] text-[11px]"></i>
+                </a>
+
+                <!-- অন্যান্য মেনু বাটন -->
+                <div class="space-y-1.5 pt-1">
+                    <button onclick="closeMenuDrawer(); openHistoryModal();" class="w-full p-3 bg-[#F8FAFC] dark:bg-slate-800/80 rounded-2xl flex items-center space-x-2.5 text-xs font-black text-gray-800 dark:text-gray-200 transition shadow-sm">
+                        <div class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900 text-purple-600 flex items-center justify-center"><i class="fa-solid fa-clock-rotate-left text-xs"></i></div>
+                        <span>📜 পোস্ট হিস্ট্রি</span>
+                    </button>
+
+                    <button onclick="closeMenuDrawer(); openModal('modal-channel');" class="w-full p-3 bg-[#F8FAFC] dark:bg-slate-800/80 rounded-2xl flex items-center space-x-2.5 text-xs font-black text-gray-800 dark:text-gray-200 transition shadow-sm">
+                        <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900 text-[#0088CC] flex items-center justify-center"><i class="fa-solid fa-tower-broadcast text-xs"></i></div>
+                        <span>📢 চ্যানেল ম্যানেজমেন্ট</span>
+                    </button>
+
+                    <button onclick="closeMenuDrawer(); openModal('modal-settings');" class="w-full p-3 bg-[#F8FAFC] dark:bg-slate-800/80 rounded-2xl flex items-center space-x-2.5 text-xs font-black text-gray-800 dark:text-gray-200 transition shadow-sm">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-sliders text-xs"></i></div>
+                        <span>⚙️ পোস্টিং সেটিংস</span>
+                    </button>
+
+                    <button onclick="closeMenuDrawer(); openModal('modal-help');" class="w-full p-3 bg-[#F8FAFC] dark:bg-slate-800/80 rounded-2xl flex items-center space-x-2.5 text-xs font-black text-gray-800 dark:text-gray-200 transition shadow-sm">
+                        <div class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-circle-question text-xs"></i></div>
+                        <span>❓ সাহায্য ও নির্দেশিকা</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center text-[10px] text-gray-400 font-black border-t border-gray-100 dark:border-darkborder pt-2.5">
+                🖊️ Easy Poster Bot • Support: @EasyLiveChatBot
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 📜 পোস্ট হিস্ট্রি মডাল ================= -->
+    <div id="modal-history" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-end justify-center hidden p-0">
+        <div class="bg-white dark:bg-darkcard w-full max-w-md rounded-t-[36px] p-6 space-y-4 modal-slide-up max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-darkborder">
+                <div>
+                    <h3 class="text-base font-black text-gray-900 dark:text-gray-100">📜 পোস্ট হিস্ট্রি</h3>
+                    <p class="text-[11px] text-gray-400 font-bold">আগের সফল পোস্টের তালিকা</p>
+                </div>
+                <button onclick="closeModal('modal-history')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 font-bold flex items-center justify-center"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+
+            <div class="flex justify-between items-center px-1">
+                <span id="history-total-count" class="text-xs font-black text-gray-600 dark:text-gray-400">মোট ০টি পোস্ট</span>
+                <button onclick="clearAllHistory()" class="text-xs font-black text-red-500 hover:text-red-700 flex items-center space-x-1 active:scale-95">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>সব মুছুন</span>
+                </button>
+            </div>
+
+            <div id="history-list-container" class="space-y-2.5"></div>
+        </div>
+    </div>
+
+    <!-- ================= 📢 চ্যানেল ম্যানেজমেন্ট মডাল ================= -->
+    <div id="modal-channel" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-end justify-center hidden p-0">
+        <div class="bg-white dark:bg-darkcard w-full max-w-md rounded-t-[36px] p-6 space-y-4 modal-slide-up max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-darkborder">
+                <h3 class="text-base font-black text-gray-900 dark:text-gray-100">📢 চ্যানেল যুক্ত ও মুছে ফেলুন</h3>
+                <button onclick="closeModal('modal-channel')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 font-bold flex items-center justify-center active:scale-90"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:bg-slate-800 border border-blue-200 dark:border-darkborder rounded-2xl p-4 space-y-2.5">
+                <p class="text-xs font-black text-blue-900 dark:text-blue-400">⚡ নতুন চ্যানেলের ইউজারনেম লিখুন:</p>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="manual-channel-input" placeholder="@yourchannel" class="flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-darkborder rounded-xl p-3 text-xs font-black outline-none focus:border-[#0088CC] text-gray-800 dark:text-gray-100">
+                    <button onclick="connectChannelManual()" class="bg-[#0088CC] text-white font-black px-4 py-3 rounded-xl text-xs shadow-md shadow-blue-500/30 active:scale-95 transition">কানেক্ট</button>
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-1">
+                <h4 class="text-xs font-black text-gray-500 uppercase tracking-wider">📋 সংযুক্ত চ্যানেলসমূহ (<span id="channel-count-badge">0</span>টি)</h4>
+                <div id="manage-channel-list" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ⚙️ সেটিংস মডাল ================= -->
+    <div id="modal-settings" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-end justify-center hidden p-0">
+        <div class="bg-white dark:bg-darkcard w-full max-w-md rounded-t-[36px] p-6 space-y-4 modal-slide-up shadow-2xl">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-darkborder">
+                <h3 class="text-base font-black text-gray-900 dark:text-gray-100">⚙️ পোস্টিং সেটিংস</h3>
+                <button onclick="closeModal('modal-settings')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 font-bold flex items-center justify-center"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+
+            <div class="space-y-3">
+                <label class="flex justify-between items-center bg-[#F8FAFC] dark:bg-slate-800 p-4 rounded-2xl cursor-pointer shadow-sm">
+                    <span class="font-black text-xs text-gray-800 dark:text-gray-200">কপি রোধ (Forward Protection)</span>
+                    <input type="checkbox" id="set-protect" class="w-5 h-5 accent-[#0088CC]">
+                </label>
+
+                <label class="flex justify-between items-center bg-[#F8FAFC] dark:bg-slate-800 p-4 rounded-2xl cursor-pointer shadow-sm">
+                    <span class="font-black text-xs text-gray-800 dark:text-gray-200">শব্দহীন পোস্ট (Send Silently)</span>
+                    <input type="checkbox" id="set-silent" class="w-5 h-5 accent-[#0088CC]">
+                </label>
+            </div>
+
+            <button onclick="closeModal('modal-settings')" class="w-full bg-[#0088CC] text-white font-black py-4 rounded-2xl text-sm shadow-lg shadow-blue-500/25">সংরক্ষণ করুন</button>
+        </div>
+    </div>
+
+    <!-- ================= ❓ হেল্প মডাল ================= -->
+    <div id="modal-help" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-darkcard w-full max-w-sm rounded-[32px] p-6 space-y-4 shadow-2xl animate-pop-up">
+            <h3 class="text-base font-black text-gray-900 dark:text-gray-100 flex items-center space-x-2">
+                <i class="fa-solid fa-circle-info text-[#0088CC]"></i>
+                <span>সহজ ব্যবহার নির্দেশিকা</span>
+            </h3>
+            <ul class="text-xs font-bold text-gray-600 dark:text-gray-300 space-y-2 leading-relaxed">
+                <li>🔹 <b>চ্যানেল অ্যাডমিন:</b> প্রথমে বটকে চ্যানেলে অ্যাডমিন বানান এবং আপনি নিজে ওই চ্যানেলের অ্যাডমিন হতে হবে।</li>
+                <li>🔹 <b>বাটন লেআউট:</b> যেকোনো ফরম্যাটে চাপ দিয়ে লিংক বাটন ও রিঅ্যাকশন সাজাতে পারেন।</li>
+                <li>🔹 <b>স্বাধীন রিঅ্যাকশন:</b> যত খুশি রিঅ্যাকশন যুক্ত করতে পারেন, প্রতিটি বাটনের কাউন্টার আলাদা থাকবে।</li>
+            </ul>
+            <button onclick="closeModal('modal-help')" class="w-full bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-gray-100 font-black py-3.5 rounded-2xl text-sm">বুঝেছি</button>
+        </div>
+    </div>
+
+    <!-- ================= নোটিফিকেশন মডাল ================= -->
+    <div id="modal-notification" class="fixed inset-0 bg-black/65 backdrop-blur-md z-50 flex items-center justify-center hidden p-5">
+        <div class="bg-white dark:bg-darkcard w-full max-w-sm rounded-[32px] p-6 text-center space-y-4 animate-pop-up shadow-2xl border border-gray-100 dark:border-darkborder">
+            <div id="notify-icon-box" class="w-20 h-20 mx-auto rounded-3xl flex items-center justify-center text-3xl shadow-inner">
+                <i id="notify-icon" class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+                <h3 id="notify-title" class="text-lg font-black text-gray-900 dark:text-gray-100 leading-snug">সফল হয়েছে!</h3>
+                <p id="notify-msg" class="text-xs text-gray-600 dark:text-gray-300 font-bold mt-1.5 leading-relaxed px-1"></p>
+            </div>
+            <button onclick="closeModal('modal-notification')" id="notify-btn" class="w-full bg-[#0088CC] text-white font-black py-3.5 rounded-2xl text-sm shadow-lg active:scale-95 transition">
+                ঠিক আছে
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: লিংক বাটন যোগ ================= -->
+    <div id="modal-button" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-end justify-center hidden p-0">
+        <div class="bg-white dark:bg-darkcard w-full max-w-md rounded-t-[36px] p-6 space-y-4 modal-slide-up max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-darkborder">
+                <div>
+                    <h3 class="text-base font-black text-gray-900 dark:text-gray-100">🔗 নতুন লিংক বাটন যুক্ত করুন</h3>
+                    <p class="text-[11px] text-gray-400 font-bold">পোস্টের নিচে ওয়েবসাইটের বাটন বানাতে ব্যবহার করুন</p>
+                </div>
+                <button onclick="closeModal('modal-button')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 font-bold flex items-center justify-center active:scale-90"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-black text-gray-500 block mb-1">বাটনের নাম / টেক্সট</label>
+                    <input type="text" id="btn-text" placeholder="যেমন: 📢 Join Channel" class="w-full bg-[#F8FAFC] dark:bg-slate-800 border-2 border-gray-200 dark:border-darkborder rounded-2xl p-3.5 text-sm font-black outline-none focus:border-[#0088CC] text-gray-800 dark:text-gray-100">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-black text-gray-500">লিংক (URL)</label>
+                        <span id="btn-url-validator" class="text-[10px] font-bold text-gray-400">🔍 চেক করা হচ্ছে...</span>
+                    </div>
+                    <input type="url" id="btn-url" oninput="validateButtonUrlInput()" placeholder="https://t.me/..." class="w-full bg-[#F8FAFC] dark:bg-slate-800 border-2 border-gray-200 dark:border-darkborder rounded-2xl p-3.5 text-sm font-black outline-none focus:border-[#0088CC] text-gray-800 dark:text-gray-100">
+                </div>
+
+                <div>
+                    <label class="text-xs font-black text-gray-500 block mb-2">কালার নির্বাচন করুন</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="selectBtnColor('gray')" id="btn-c-gray" class="btn-color-choice p-3 rounded-2xl font-black text-xs color-gray selected-ring">সাধারণ</button>
+                        <button type="button" onclick="selectBtnColor('red')" id="btn-c-red" class="btn-color-choice p-3 rounded-2xl font-black text-xs color-red">লাল</button>
+                        <button type="button" onclick="selectBtnColor('green')" id="btn-c-green" class="btn-color-choice p-3 rounded-2xl font-black text-xs color-green">সবুজ</button>
+                        <button type="button" onclick="selectBtnColor('blue')" id="btn-c-blue" class="btn-color-choice p-3 rounded-2xl font-black text-xs color-blue">নীল</button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="saveLinkButton()" class="w-full bg-gradient-to-r from-[#F7941D] to-[#FF5722] text-white font-black py-4 rounded-2xl text-sm shadow-lg shadow-orange-500/30 active:scale-98 transition">বাটন যুক্ত করুন</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: রিঅ্যাকশন বাটন যোগ ================= -->
+    <div id="modal-reaction" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-end justify-center hidden p-0">
+        <div class="bg-white dark:bg-darkcard w-full max-w-md rounded-t-[36px] p-6 space-y-4 modal-slide-up max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-darkborder">
+                <div>
+                    <h3 class="text-base font-black text-gray-900 dark:text-gray-100">❤️ রিঅ্যাকশন বাটন যুক্ত করুন</h3>
+                    <p class="text-[11px] text-gray-400 font-bold">পোস্টে লাইক বা ইমোজি কাউন্টার যোগ করতে চাপুন</p>
+                </div>
+                <button onclick="closeModal('modal-reaction')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 font-bold flex items-center justify-center active:scale-90"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+
+            <div class="space-y-3">
+                <p class="text-xs font-black text-gray-500">ইমোজি বেছে নিন (এক ক্লিকে ১টি):</p>
+                <div class="grid grid-cols-6 gap-2 text-center text-xl">
+                    <button type="button" onclick="pickSingleEmoji('👍')" class="p-2.5 bg-gray-100 dark:bg-slate-800 rounded-2xl active:scale-90 transition">👍</button>
+                    <button type="button" onclick="pickSingleEmoji('❤️')" class="p-2.5 bg-gray-100 dark:bg-slate-800 rounded-2xl active:scale-90 transition">❤️</button>
+                    <button type="button" onclick="pickSingleEmoji('🔥')" class="p-2.5 bg-gray-100 dark:bg-slate-800 rounded-2xl active:scale-90 transition">🔥</button>
+                    <button type="button" onclick="pickSingleEmoji('👏')" class="p-2.5 bg-gray-100 dark:bg-slate-800 rounded-2xl active:scale-90 transition">👏</button>
+                    <button type="button" onclick="pickSingleEmoji('🎉')" class="p-2.5 bg-gray-100 dark:bg-slate-800 rounded-2xl active:scale-90 transition">🎉</button>
+                    <button type="button" onclick="pickSingleEmoji('⚡')" class="p-2.5 bg-gray-100 dark:bg-slate-800 rounded-2xl active:scale-90 transition">⚡</button>
+                </div>
+
+                <div>
+                    <label class="text-xs font-black text-gray-500 block mb-1">নির্বাচিত ইমোজি</label>
+                    <input type="text" id="reaction-emojis-input" value="❤️" class="w-full bg-[#F8FAFC] dark:bg-slate-800 border-2 border-gray-200 dark:border-darkborder rounded-2xl p-3.5 text-sm font-black outline-none focus:border-[#E2136E] text-gray-800 dark:text-gray-100">
+                </div>
+
+                <div>
+                    <label class="text-xs font-black text-gray-500 block mb-2">রিঅ্যাকশন কালার</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="selectReactColor('gray')" id="react-c-gray" class="react-color-choice p-3 rounded-2xl font-black text-xs color-gray selected-ring">সাধারণ</button>
+                        <button type="button" onclick="selectReactColor('red')" id="react-c-red" class="react-color-choice p-3 rounded-2xl font-black text-xs color-red">লাল</button>
+                        <button type="button" onclick="selectReactColor('green')" id="react-c-green" class="react-color-choice p-3 rounded-2xl font-black text-xs color-green">সবুজ</button>
+                        <button type="button" onclick="selectReactColor('blue')" id="react-c-blue" class="react-color-choice p-3 rounded-2xl font-black text-xs color-blue">নীল</button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="saveReactionBlock()" class="w-full bg-gradient-to-r from-[#E2136E] to-[#FF4B8B] text-white font-black py-4 rounded-2xl text-sm shadow-lg shadow-pink-500/30 active:scale-98 transition">রিঅ্যাকশন যুক্ত করুন</button>
+        </div>
+    </div>
+
+    <!-- ================= জাভাস্ক্রিপ্ট লজিক ================= -->
+    <script>
+        const BOT_TOKEN = '8773267588:AAFaeli6m4nz1lzl76qAnC7amfsOWIR1CuI'; 
+        const TUTORIAL_VIDEO_URL = 'https://youtube.com'; 
+
+        const tg = window.Telegram?.WebApp;
+        if (tg) { tg.expand(); tg.ready(); }
+        const currentUser = tg?.initDataUnsafe?.user || { id: 12345678, first_name: "User", last_name: "", username: "EasyLiveChatBot", is_premium: true };
+
+        let rawButtonsList = [];
+        let reactionList = []; // আনলিমিটেড স্বাধীন রিঅ্যাকশন লিস্ট
+        let activeLayout = '1col';
+        let activeReactionLayout = 'row';
+        let currentBtnColor = 'gray';
+        let currentReactColor = 'gray';
+        let originalSelectedImage = null;
+        let finalWatermarkedBlob = null;
+        let selectedScheduleDateTime = null;
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function openMenuDrawer() { 
+            updateUserProfileDrawer();
+            document.getElementById('tutorial-link-btn').href = TUTORIAL_VIDEO_URL;
+            document.getElementById('modal-menu-drawer').classList.remove('hidden'); 
+        }
+        function closeMenuDrawer() { document.getElementById('modal-menu-drawer').classList.add('hidden'); }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('postbot_dark_theme', isDark ? '1' : '0');
+            document.getElementById('theme-btn').innerHTML = isDark ? '<i class="fa-solid fa-sun text-yellow-400"></i>' : '<i class="fa-solid fa-moon"></i>';
+        }
+        if (localStorage.getItem('postbot_dark_theme') === '1') toggleDarkMode();
+
+        async function updateUserProfileDrawer() {
+            const fullName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User';
+            document.getElementById('user-display-name').innerText = fullName;
+            document.getElementById('user-display-username').innerText = currentUser.username ? `@${currentUser.username}` : '@EasyLiveChatBot';
+            document.getElementById('user-display-id').innerText = `ID: ${currentUser.id || 'N/A'}`;
+
+            if (currentUser.is_premium) {
+                document.getElementById('user-premium-badge').classList.remove('hidden');
+            }
+
+            const channels = getSavedChannels();
+            const history = getSavedHistory();
+            document.getElementById('u-stat-channels').innerText = channels.length;
+            document.getElementById('u-stat-posts').innerText = history.length;
+
+            if (currentUser.id) {
+                try {
+                    if (currentUser.photo_url) {
+                        setAvatarImage(currentUser.photo_url);
+                        return;
+                    }
+                    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUserProfilePhotos?user_id=${currentUser.id}&limit=1`);
+                    const data = await res.json();
+                    if (data.ok && data.result.total_count > 0) {
+                        const fileId = data.result.photos[0][0].file_id;
+                        const fRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+                        const fData = await fRes.json();
+                        if (fData.ok) {
+                            const avatarUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fData.result.file_path}`;
+                            setAvatarImage(avatarUrl);
+                            return;
+                        }
+                    }
+                } catch (e) {}
+            }
+        }
+
+        function setAvatarImage(url) {
+            const img = document.getElementById('user-avatar-img');
+            const fallback = document.getElementById('user-avatar-fallback');
+            img.src = url;
+            img.classList.remove('hidden');
+            fallback.classList.add('hidden');
+        }
+
+        function copyMyUserId() {
+            if (currentUser.id) {
+                navigator.clipboard.writeText(currentUser.id.toString());
+                showNotification('আইডি কপি হয়েছে! 📋', `আপনার টেলিগ্রাম আইডি ${currentUser.id} ক্লিপবোর্ডে কপি করা হয়েছে।`, 'success');
+            }
+        }
+
+        function applySmartFormatting(openTag, closeTag) {
+            const textarea = document.getElementById('post-text');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+
+            if (start !== end) {
+                const selectedText = text.substring(start, end);
+                textarea.value = text.substring(0, start) + openTag + selectedText + closeTag + text.substring(end);
+                textarea.selectionStart = start + openTag.length;
+                textarea.selectionEnd = start + openTag.length + selectedText.length;
+            } else if (text.trim() !== '') {
+                const before = text.substring(0, start);
+                const after = text.substring(start);
+                const words = before.trim().split(/\s+/);
+                const lastWord = words[words.length - 1];
+
+                if (lastWord) {
+                    const lastIndex = before.lastIndexOf(lastWord);
+                    textarea.value = text.substring(0, lastIndex) + openTag + lastWord + closeTag + after;
+                } else {
+                    textarea.value = openTag + text + closeTag;
+                }
+            } else {
+                textarea.value = openTag + 'টেক্সট' + closeTag;
+            }
+            updateLiveTextPreview();
+        }
+
+        function insertHyperlink() {
+            const linkText = prompt('যে লেখার ওপর লিংক বসাবেন (যেমন: ওয়েবসাইট):');
+            if (!linkText) return;
+            let url = prompt('লিংকটি দিন (URL):', 'https://');
+            if (!url) return;
+            const textarea = document.getElementById('post-text');
+            textarea.value += `<a href="${url}">${linkText}</a>`;
+            updateLiveTextPreview();
+        }
+
+        function validateButtonUrlInput() {
+            const url = document.getElementById('btn-url').value.trim();
+            const indicator = document.getElementById('btn-url-validator');
+            if (!url) {
+                indicator.innerText = '🔍 চেক করা হচ্ছে...';
+                indicator.className = 'text-[10px] font-bold text-gray-400';
+            } else if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('t.me/')) {
+                indicator.innerText = '✅ লিংক সঠিক আছে';
+                indicator.className = 'text-[10px] font-bold text-green-500';
+            } else {
+                indicator.innerText = '⚠️ https:// দিয়ে শুরু করুন';
+                indicator.className = 'text-[10px] font-bold text-amber-500';
+            }
+        }
+
+        function cleanAllFormattingTags() {
+            const textarea = document.getElementById('post-text');
+            textarea.value = textarea.value.replace(/<[^>]*>?/gm, '');
+            updateLiveTextPreview();
+            showNotification('ক্লিন করা হয়েছে! 🧹', 'সব ফরম্যাটিং ট্যাগ মুছে সাধারণ টেক্সট করা হয়েছে।', 'success');
+        }
+
+        function aiEnhanceText() {
+            const textarea = document.getElementById('post-text');
+            let txt = textarea.value.trim().replace(/<[^>]*>?/gm, '');
+            if (!txt) txt = "নতুন আপডেট ও গুরুত্বপূর্ণ খবর!";
+
+            const enhanced = `⚡ <b>${txt.split('\n')[0]}</b>\n\n📌 <i>বিস্তারিত বিবরণ:</i>\n👉 ${txt.replace(/\n/g, '\n👉 ')}\n\n🔥 <b>নিচের বোতামগুলো থেকে সরাসরি যুক্ত হোন!</b>`;
+            textarea.value = enhanced;
+            updateLiveTextPreview();
+            showNotification('AI এনহ্যান্সড! ✨', 'আপনার পোস্টের ক্যাপশন আকর্ষণীয় ফরম্যাটে সাজানো হয়েছে।', 'success');
+        }
+
+        function applyCustomWatermark() {
+            if (!originalSelectedImage) return;
+            const wmText = document.getElementById('watermark-input').value.trim();
+
+            const img = new Image();
+            img.src = URL.createObjectURL(originalSelectedImage);
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                if (wmText) {
+                    const fontSize = Math.max(24, Math.floor(img.width * 0.04));
+                    ctx.font = `bold ${fontSize}px sans-serif`;
+                    ctx.textBaseline = 'bottom';
+                    
+                    const textWidth = ctx.measureText(wmText).width;
+                    const padding = fontSize * 0.5;
+                    const x = img.width - textWidth - padding * 2 - 20;
+                    const y = img.height - 20;
+
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+                    ctx.roundRect(x, y - fontSize - padding, textWidth + padding * 2, fontSize + padding * 1.2, 12);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillText(wmText, x + padding, y - padding * 0.3);
+                }
+
+                canvas.toBlob(blob => {
+                    finalWatermarkedBlob = blob;
+                    const previewUrl = URL.createObjectURL(blob);
+                    document.getElementById('media-preview-img').src = previewUrl;
+                    document.getElementById('live-preview-img').src = previewUrl;
+                }, 'image/jpeg', 0.95);
+            };
+        }
+
+        function showNotification(title, message, type = 'success') {
+            const modal = document.getElementById('modal-notification');
+            const iconBox = document.getElementById('notify-icon-box');
+            const icon = document.getElementById('notify-icon');
+            const titleEl = document.getElementById('notify-title');
+            const msgEl = document.getElementById('notify-msg');
+            const btn = document.getElementById('notify-btn');
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+
+            if (type === 'success') {
+                iconBox.className = "w-20 h-20 mx-auto rounded-3xl flex items-center justify-center text-3xl bg-emerald-50 text-emerald-600 shadow-inner";
+                icon.className = "fa-solid fa-circle-check text-4xl";
+                btn.className = "w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg shadow-emerald-500/25 active:scale-95 transition";
+                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else if (type === 'error') {
+                iconBox.className = "w-20 h-20 mx-auto rounded-3xl flex items-center justify-center text-3xl bg-red-50 text-red-600 shadow-inner";
+                icon.className = "fa-solid fa-shield-halved text-4xl";
+                btn.className = "w-full bg-gradient-to-r from-red-500 to-rose-600 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg shadow-red-500/25 active:scale-95 transition";
+                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+            } else if (type === 'warning') {
+                iconBox.className = "w-20 h-20 mx-auto rounded-3xl flex items-center justify-center text-3xl bg-amber-50 text-amber-600 shadow-inner";
+                icon.className = "fa-solid fa-triangle-exclamation text-4xl";
+                btn.className = "w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg shadow-amber-500/25 active:scale-95 transition";
+                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        async function checkIsUserChannelAdmin(chatId) {
+            if (!currentUser.id || currentUser.id === 0) {
+                return { ok: false, message: 'টেলিগ্রাম অ্যাপের ভেতর থেকে বটটি ওপেন করুন।' };
+            }
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${chatId}&user_id=${currentUser.id}`);
+                const data = await res.json();
+                if (data.ok && ['creator', 'administrator'].includes(data.result.status)) {
+                    return { ok: true };
+                } else {
+                    return { ok: false, message: '❌ আপনি এই Channel-এর Admin বা Owner নন! তাই এখানে Post করার অনুমতি নেই।' };
+                }
+            } catch (e) {
+                return { ok: false, message: 'ভেরিফিকেশন সম্পন্ন করা যায়নি।' };
+            }
+        }
+
+        function setQuickTime(minutes, btnEl) {
+            document.querySelectorAll('.quick-time-pill').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            document.getElementById('custom-dt-container').classList.add('hidden');
+
+            if (minutes === 0) {
+                selectedScheduleDateTime = null;
+                document.getElementById('publish-btn-text').innerText = 'Publish Post (পোস্ট করুন)';
+            } else {
+                const now = new Date();
+                const future = new Date(now.getTime() + minutes * 60000);
+                const year = future.getFullYear();
+                const month = String(future.getMonth() + 1).padStart(2, '0');
+                const day = String(future.getDate()).padStart(2, '0');
+                const hours = String(future.getHours()).padStart(2, '0');
+                const mins = String(future.getMinutes()).padStart(2, '0');
+                selectedScheduleDateTime = `${year}-${month}-${day}T${hours}:${mins}`;
+                document.getElementById('publish-btn-text').innerText = `Schedule Post (${minutes} মিনিট পর)`;
+            }
+        }
+
+        function toggleCustomDateTime(btnEl) {
+            document.querySelectorAll('.quick-time-pill').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+            document.getElementById('custom-dt-container').classList.remove('hidden');
+        }
+
+        function onCustomDateTimeChange() {
+            const val = document.getElementById('scheduled-time').value;
+            if (val) {
+                selectedScheduleDateTime = val;
+                document.getElementById('publish-btn-text').innerText = 'Schedule Post (শিডিউল করুন)';
+            }
+        }
+
+        function selectBtnColor(color) {
+            currentBtnColor = color;
+            document.querySelectorAll('.btn-color-choice').forEach(el => el.classList.remove('selected-ring'));
+            document.getElementById(`btn-c-${color}`).classList.add('selected-ring');
+        }
+
+        function selectReactColor(color) {
+            currentReactColor = color;
+            document.querySelectorAll('.react-color-choice').forEach(el => el.classList.remove('selected-ring'));
+            document.getElementById(`react-c-${color}`).classList.add('selected-ring');
+        }
+
+        function pickSingleEmoji(emoji) {
+            document.getElementById('reaction-emojis-input').value = emoji;
+        }
+
+        function handleMedia(e) {
+            const file = e.target.files[0];
+            if (file) {
+                originalSelectedImage = file;
+                finalWatermarkedBlob = file;
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    document.getElementById('media-preview-img').src = ev.target.result;
+                    document.getElementById('media-preview-container').classList.remove('hidden');
+                    document.getElementById('live-preview-img').src = ev.target.result;
+                    document.getElementById('live-preview-img').classList.remove('hidden');
+                    document.getElementById('media-label').innerText = "ছবি পরিবর্তন";
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeMedia() {
+            originalSelectedImage = null;
+            finalWatermarkedBlob = null;
+            document.getElementById('media-input').value = '';
+            document.getElementById('media-preview-container').classList.add('hidden');
+            document.getElementById('live-preview-img').classList.add('hidden');
+            document.getElementById('media-label').innerText = "ছবি যোগ";
+        }
+
+        function updateLiveTextPreview() {
+            const val = document.getElementById('post-text').value;
+            
+            let formatted = val || (originalSelectedImage || reactionList.length > 0 || rawButtonsList.length > 0 ? "" : "পোস্টের প্রিভিউ এখানে দেখা যাবে...");
+            formatted = formatted.replace(/<tg-spoiler>(.*?)<\/tg-spoiler>/gi, '<span class="tg-spoiler-box" onclick="this.classList.toggle(\'revealed\')">$1</span>');
+            formatted = formatted.replace(/<code>(.*?)<\/code>/gi, '<code class="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[11px] font-mono">$1</code>');
+            formatted = formatted.replace(/<blockquote>(.*?)<\/blockquote>/gi, '<blockquote class="border-l-4 border-[#0088CC] pl-2 my-1 italic bg-blue-50/50 dark:bg-slate-800 p-1 rounded">$1</blockquote>');
+            
+            document.getElementById('live-preview-text').innerHTML = formatted;
+            document.getElementById('live-preview-time').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        document.getElementById('post-text').addEventListener('input', updateLiveTextPreview);
+
+        function saveLinkButton() {
+            const text = document.getElementById('btn-text').value.trim();
+            const url = document.getElementById('btn-url').value.trim();
+            if (!text || !url) return showNotification('তথ্য অসম্পূর্ণ', 'বাটনের নাম এবং লিংক দিন!', 'error');
+
+            rawButtonsList.push({ type: 'link', text: text, url: url, color: currentBtnColor });
+            document.getElementById('btn-text').value = '';
+            document.getElementById('btn-url').value = '';
+            closeModal('modal-button');
+            updateUIAndPreview();
+        }
+
+        function deleteRawButton(index) {
+            rawButtonsList.splice(index, 1);
+            updateUIAndPreview();
+        }
+
+        function saveReactionBlock() {
+            const raw = document.getElementById('reaction-emojis-input').value.trim();
+            const emojis = raw.split(/\s+/).filter(Boolean);
+            if (emojis.length === 0) return showNotification('ইমোজি দিন', 'কমপক্ষে ১টি ইমোজি দিন!', 'error');
+
+            emojis.forEach(emo => {
+                reactionList.push({ emoji: emo, color: currentReactColor });
+            });
+
+            closeModal('modal-reaction');
+            updateUIAndPreview();
+        }
+
+        function deleteReaction(index) {
+            reactionList.splice(index, 1);
+            updateUIAndPreview();
+        }
+
+        function switchButtonLayout(layoutName) {
+            activeLayout = layoutName;
+            document.querySelectorAll('.format-card').forEach(el => el.classList.remove('active'));
+            document.getElementById(`format-${layoutName}`).classList.add('active');
+            updateUIAndPreview();
+        }
+
+        function switchReactionLayout(layoutType) {
+            activeReactionLayout = layoutType;
+            ['row', '2col', '1plus2'].forEach(t => {
+                const btn = document.getElementById(`react-layout-${t}`);
+                if (t === layoutType) {
+                    btn.className = "p-2.5 rounded-xl text-xs font-black border-2 border-[#E2136E] bg-pink-50 dark:bg-pink-950/50 text-[#E2136E] transition";
+                } else {
+                    btn.className = "p-2.5 rounded-xl text-xs font-black border-2 border-gray-200 dark:border-darkborder bg-[#F8FAFC] dark:bg-slate-800 text-gray-700 dark:text-gray-300 transition";
+                }
+            });
+            updateUIAndPreview();
+        }
+
+        function calculateLayoutGrid() {
+            const grid = [];
+            const btns = [...rawButtonsList];
+            if (btns.length === 0) return grid;
+
+            if (activeLayout === '1col') {
+                btns.forEach(b => grid.push([b]));
+            } else if (activeLayout === '2col') {
+                for (let i = 0; i < btns.length; i += 2) grid.push(btns.slice(i, i + 2));
+            } else if (activeLayout === '3col') {
+                for (let i = 0; i < btns.length; i += 3) grid.push(btns.slice(i, i + 3));
+            } else if (activeLayout === '1plus2') {
+                if (btns.length > 0) grid.push([btns[0]]);
+                for (let i = 1; i < btns.length; i += 2) grid.push(btns.slice(i, i + 2));
+            }
+            return grid;
+        }
+
+        function calculateReactionGrid() {
+            const grid = [];
+            if (reactionList.length === 0) return grid;
+            const emojis = reactionList.map(item => ({ type: 'reaction', emoji: item.emoji, color: item.color }));
+
+            if (activeReactionLayout === 'row') {
+                grid.push(emojis);
+            } else if (activeReactionLayout === '2col') {
+                for (let i = 0; i < emojis.length; i += 2) grid.push(emojis.slice(i, i + 2));
+            } else if (activeReactionLayout === '1plus2') {
+                if (emojis.length > 0) grid.push([emojis[0]]);
+                for (let i = 1; i < emojis.length; i += 2) grid.push(emojis.slice(i, i + 2));
+            }
+            return grid;
+        }
+
+        function updateUIAndPreview() {
+            document.getElementById('total-btns-count').innerText = `${rawButtonsList.length}টি বাটন` + (reactionList.length > 0 ? ` + ${reactionList.length}টি রিঅ্যাকশন` : '');
+            const chipList = document.getElementById('added-buttons-chip-list');
+            const liveGrid = document.getElementById('live-preview-grid');
+            chipList.innerHTML = '';
+            liveGrid.innerHTML = '';
+
+            if (rawButtonsList.length === 0 && reactionList.length === 0) {
+                chipList.innerHTML = '<p class="text-xs text-gray-400 font-bold py-1">কোনো বাটন যোগ করা হয়নি। উপরে "লিংক বাটন" বা "রিঅ্যাকশন"-এ চাপুন।</p>';
+            } else {
+                rawButtonsList.forEach((btn, idx) => {
+                    const chip = document.createElement('div');
+                    chip.className = `inline-flex items-center space-x-1 px-3 py-1.5 rounded-xl text-xs font-black color-${btn.color} shadow-sm`;
+                    chip.innerHTML = `<span>${btn.text}</span><button onclick="deleteRawButton(${idx})" class="w-4 h-4 rounded-full bg-black/20 hover:bg-red-500 hover:text-white flex items-center justify-center text-[9px] transition ml-1"><i class="fa-solid fa-xmark"></i></button>`;
+                    chipList.appendChild(chip);
+                });
+
+                reactionList.forEach((r, idx) => {
+                    const rChip = document.createElement('div');
+                    rChip.className = `inline-flex items-center space-x-1 px-3 py-1.5 rounded-xl text-xs font-black color-${r.color} shadow-sm`;
+                    rChip.innerHTML = `<span>রিঅ্যাকশন: ${r.emoji}</span><button onclick="deleteReaction(${idx})" class="w-4 h-4 rounded-full bg-black/20 hover:bg-red-500 hover:text-white flex items-center justify-center text-[9px] transition ml-1"><i class="fa-solid fa-xmark"></i></button>`;
+                    chipList.appendChild(rChip);
+                });
+            }
+
+            const grid = calculateLayoutGrid();
+            grid.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `grid grid-cols-${row.length} gap-1.5`;
+                row.forEach(b => {
+                    const bEl = document.createElement('div');
+                    bEl.className = `color-${b.color} py-2.5 px-2 rounded-xl text-center text-xs font-black shadow-sm truncate`;
+                    bEl.innerText = b.text;
+                    rowDiv.appendChild(bEl);
+                });
+                liveGrid.appendChild(rowDiv);
+            });
+
+            const rGrid = calculateReactionGrid();
+            rGrid.forEach(row => {
+                const reactDiv = document.createElement('div');
+                reactDiv.className = `grid grid-cols-${row.length} gap-1.5 pt-0.5`;
+                row.forEach(emo => {
+                    const emoEl = document.createElement('div');
+                    emoEl.className = `color-${emo.color} py-2 px-1 rounded-xl text-center text-xs font-black shadow-sm`;
+                    emoEl.innerText = `${emo.emoji} 0`;
+                    reactDiv.appendChild(emoEl);
+                });
+                liveGrid.appendChild(reactDiv);
+            });
+            
+            updateLiveTextPreview();
+        }
+
+        function selectChannelFromPicker(channelId, title, username) {
+            document.getElementById('target-channel').value = channelId;
+            document.getElementById('selected-channel-title').innerText = title;
+            document.getElementById('selected-channel-user').innerText = username || 'সিলেক্টেড চ্যানেল';
+            closeModal('modal-channel-picker');
+        }
+
+        function getSavedChannels() {
+            return JSON.parse(localStorage.getItem('postbot_channels') || '[]');
+        }
+
+        function loadChannels() {
+            const channels = getSavedChannels();
+            const pickerList = document.getElementById('picker-channel-list');
+            const mList = document.getElementById('manage-channel-list');
+            const badge = document.getElementById('channel-count-badge');
+
+            pickerList.innerHTML = '';
+            mList.innerHTML = '';
+            badge.innerText = channels.length;
+
+            // 'ALL Channels' অপশন
+            pickerList.innerHTML += `
+                <div onclick="selectChannelFromPicker('all', '📢 ALL Channels (সব চ্যানেলে একসাথে)', 'সব চ্যানেলে একসাথে পোস্ট হবে')" class="p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:bg-slate-800 rounded-2xl border border-blue-200 dark:border-darkborder flex items-center justify-between cursor-pointer active:scale-98 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-xl bg-[#0088CC] text-white flex items-center justify-center text-xs"><i class="fa-solid fa-bullhorn"></i></div>
+                        <div>
+                            <span class="text-xs font-black text-gray-800 dark:text-gray-100 block">📢 ALL Channels</span>
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-bold">সব চ্যানেলে একসাথে পোস্ট পাঠান</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-circle-check text-[#0088CC] text-sm"></i>
+                </div>
+            `;
+
+            if (channels.length > 0) {
+                channels.forEach(c => {
+                    pickerList.innerHTML += `
+                        <div onclick="selectChannelFromPicker('${c.channel_id}', '${c.channel_title}', '${c.channel_username}')" class="p-3.5 bg-[#F8FAFC] dark:bg-slate-800/90 rounded-2xl border border-gray-200 dark:border-darkborder flex items-center justify-between cursor-pointer active:scale-98 transition">
+                            <div class="flex items-center space-x-3 truncate">
+                                <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900 text-purple-600 flex items-center justify-center text-xs"><i class="fa-solid fa-tower-broadcast"></i></div>
+                                <div class="truncate">
+                                    <span class="text-xs font-black text-gray-800 dark:text-gray-100 block truncate">${c.channel_title}</span>
+                                    <span class="text-[10px] text-gray-400 font-bold block truncate">${c.channel_username}</span>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                        </div>
+                    `;
+
+                    const item = document.createElement('div');
+                    item.className = "bg-[#F8FAFC] dark:bg-slate-800 border border-gray-200 dark:border-darkborder rounded-2xl p-3 flex items-center justify-between shadow-sm";
+                    item.innerHTML = `<div><span class="text-xs font-black text-gray-800 dark:text-gray-200 block">📢 ${c.channel_title}</span><span class="text-[10px] text-gray-400 font-bold">${c.channel_username}</span></div><button onclick="deleteChannel('${c.channel_id}')" class="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-950/50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center text-xs transition active:scale-90"><i class="fa-solid fa-trash-can"></i></button>`;
+                    mList.appendChild(item);
+                });
+            } else {
+                mList.innerHTML = '<p class="text-xs text-gray-400 font-bold text-center py-2">কোনো চ্যানেল যুক্ত নেই</p>';
+            }
+        }
+
+        async function connectChannelManual() {
+            let username = document.getElementById('manual-channel-input').value.trim();
+            if (!username) return showNotification('ইউজারনেম দিন', 'চ্যানেলের ইউজারনেম লিখুন!', 'error');
+            if (!username.startsWith('@')) username = '@' + username;
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChat?chat_id=${username}`);
+                const data = await res.json();
+                
+                if (data.ok) {
+                    const chInfo = data.result;
+                    const existingChannels = getSavedChannels();
+
+                    const alreadyExists = existingChannels.some(c => 
+                        c.channel_id == chInfo.id || 
+                        c.channel_username.toLowerCase() === username.toLowerCase()
+                    );
+
+                    if (alreadyExists) {
+                        return showNotification('ইতিমধ্যে যুক্ত আছে! ⚠️', `📢 "${chInfo.title}" চ্যানেলটি আগে থেকেই আপনার তালিকায় যুক্ত আছে।`, 'warning');
+                    }
+
+                    existingChannels.unshift({ channel_id: chInfo.id, channel_title: chInfo.title, channel_username: username });
+                    localStorage.setItem('postbot_channels', JSON.stringify(existingChannels));
+                    showNotification('সফল হয়েছে!', `📢 "${chInfo.title}" চ্যানেল সফলভাবে যুক্ত হয়েছে।`, 'success');
+                    document.getElementById('manual-channel-input').value = '';
+                    loadChannels();
+                } else {
+                    showNotification('ভেরিফিকেশন ব্যর্থ', 'বটকে চ্যানেলে অ্যাডমিন বানান এবং সঠিক ইউজারনেম দিন!', 'error');
+                }
+            } catch (e) {
+                showNotification('ত্রুটি', 'টেলিগ্রাম সার্ভারের সাথে সংযোগ করা যায়নি!', 'error');
+            }
+        }
+
+        function deleteChannel(channelId) {
+            if (!confirm('চ্যানেলটি মুছে ফেলতে চান?')) return;
+            const channels = getSavedChannels().filter(c => c.channel_id != channelId);
+            localStorage.setItem('postbot_channels', JSON.stringify(channels));
+            showNotification('মুছে ফেলা হয়েছে!', 'চ্যানেলটি মুছে ফেলা হয়েছে।', 'success');
+            loadChannels();
+        }
+
+        function saveCurrentDraft() {
+            const draft = {
+                text: document.getElementById('post-text').value,
+                buttons: rawButtonsList,
+                reactions: reactionList,
+                time: new Date().toLocaleTimeString()
+            };
+            localStorage.setItem('postbot_saved_draft', JSON.stringify(draft));
+            showNotification('ড্রাফট সেভ হয়েছে! 💾', 'আপনার বর্তমান পোস্টটি মেমরিতে সংরক্ষিত হয়েছে।', 'success');
+        }
+
+        function loadSavedDraft() {
+            const draft = JSON.parse(localStorage.getItem('postbot_saved_draft') || 'null');
+            if (!draft) return showNotification('ড্রাফট নেই', 'কোনো ড্রাফট পাওয়া যায়নি!', 'warning');
+
+            document.getElementById('post-text').value = draft.text || '';
+            rawButtonsList = draft.buttons || [];
+            reactionList = draft.reactions || [];
+            updateLiveTextPreview();
+            updateUIAndPreview();
+            showNotification('ড্রাফট লোড হয়েছে! 📂', `সেভ করা ড্রাফট সফলভাবে রিস্টোর হয়েছে।`, 'success');
+        }
+
+        function getSavedHistory() {
+            return JSON.parse(localStorage.getItem('postbot_history') || '[]');
+        }
+
+        function openHistoryModal() {
+            openModal('modal-history');
+            const history = getSavedHistory();
+            const container = document.getElementById('history-list-container');
+            const totalCount = document.getElementById('history-total-count');
+
+            totalCount.innerText = `মোট ${history.length}টি পোস্ট`;
+            container.innerHTML = '';
+
+            if (history.length > 0) {
+                history.forEach((p, idx) => {
+                    const card = document.createElement('div');
+                    card.className = "bg-[#F8FAFC] dark:bg-slate-800 border border-gray-200 dark:border-darkborder rounded-2xl p-3.5 space-y-2 shadow-sm";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-black text-gray-800 dark:text-gray-200 truncate max-w-[180px]">📢 ${p.channel_title || 'চ্যানেল'}</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300">লাইভ</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 font-medium line-clamp-2">${p.text || 'ছবি/বাটন পোস্ট'}</p>
+                        <div class="flex justify-between items-center pt-1 border-t border-gray-200 dark:border-darkborder text-[10px] text-gray-400 font-bold">
+                            <span>⏰ ${p.time}</span>
+                            <div class="space-x-2">
+                                <button onclick="reuseHistoryPost(${idx})" class="text-purple-600 font-black hover:underline">🔄 পুনরায় ব্যবহার</button>
+                                ${p.post_link ? `<a href="${p.post_link}" target="_blank" class="text-[#0088CC] font-black hover:underline">👁️ পোস্ট দেখুন</a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } else {
+                container.innerHTML = '<p class="text-xs text-gray-400 font-bold text-center py-5">কোনো পোস্ট হিস্ট্রি নেই</p>';
+            }
+        }
+
+        function reuseHistoryPost(index) {
+            const history = getSavedHistory();
+            const post = history[index];
+            if (post) {
+                document.getElementById('post-text').value = post.rawText || post.text || '';
+                updateLiveTextPreview();
+                closeModal('modal-history');
+                showNotification('রিস্টোর হয়েছে! 🔄', 'পোস্টটি এডিটরে ফিরিয়ে আনা হয়েছে।', 'success');
+            }
+        }
+
+        function clearAllHistory() {
+            if (!confirm('সব পোস্ট হিস্ট্রি মুছে ফেলতে চান?')) return;
+            localStorage.removeItem('postbot_history');
+            showNotification('সাফ হয়েছে!', 'সমস্ত পোস্ট হিস্ট্রি মুছে ফেলা হয়েছে।', 'success');
+            openHistoryModal();
+        }
+
+        async function publishPost() {
+            const channelId = document.getElementById('target-channel').value;
+            const text = document.getElementById('post-text').value.trim();
+            const isAutoPin = document.getElementById('set-pin').checked;
+
+            if (!channelId) return showNotification('চ্যানেল নির্বাচন', 'টার্গেট চ্যানেল সিলেক্ট করুন!', 'error');
+            
+            if (!text && !finalWatermarkedBlob && rawButtonsList.length === 0 && reactionList.length === 0) {
+                return showNotification('পোস্ট ফাঁকা', 'কিছু লিখুন, ছবি দিন অথবা বাটন যুক্ত করুন!', 'error');
+            }
+
+            const allChannels = getSavedChannels();
+            let targets = [];
+            if (channelId === 'all') {
+                targets = allChannels;
+            } else {
+                targets = allChannels.filter(c => c.channel_id == channelId);
+            }
+
+            if (targets.length === 0) return showNotification('চ্যানেল নেই', 'প্রথমে চ্যানেল কানেক্ট করুন!', 'error');
+
+            for (const target of targets) {
+                const adminCheck = await checkIsUserChannelAdmin(target.channel_id);
+                if (!adminCheck.ok) {
+                    return showNotification('অনুমতি মেলেনি! 🚫', adminCheck.message, 'error');
+                }
+            }
+
+            const finalLayout = calculateLayoutGrid();
+            const rGrid = calculateReactionGrid();
+            rGrid.forEach(r => finalLayout.push(r));
+
+            const inline_keyboard = [];
+            finalLayout.forEach((row, rowIndex) => {
+                const rBtns = [];
+                row.forEach((b, bIdx) => {
+                    const color = (b.color || 'gray').toLowerCase();
+                    const btnObj = {};
+
+                    if (b.type === 'link') {
+                        btnObj.text = b.text;
+                        btnObj.url = b.url;
+                    } else if (b.type === 'reaction') {
+                        btnObj.text = `${b.emoji} 0`;
+                        btnObj.callback_data = `r_${rowIndex}_${bIdx}_${Math.random().toString(36).substring(2, 7)}`;
+                    }
+
+                    if (color === 'red' || color === 'লাল') btnObj.style = 'danger';
+                    else if (color === 'green' || color === 'সবুজ') btnObj.style = 'success';
+                    else if (color === 'blue' || color === 'নীল') btnObj.style = 'primary';
+
+                    rBtns.push(btnObj);
+                });
+                if (rBtns.length > 0) inline_keyboard.push(rBtns);
+            });
+
+            const replyMarkup = inline_keyboard.length > 0 ? JSON.stringify({ inline_keyboard }) : null;
+            let successCount = 0;
+            let lastPostLink = '';
+
+            for (const target of targets) {
+                try {
+                    let endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                    let bodyData = new FormData();
+                    bodyData.append('chat_id', target.channel_id);
+                    if (replyMarkup) bodyData.append('reply_markup', replyMarkup);
+
+                    if (finalWatermarkedBlob) {
+                        endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
+                        bodyData.append('photo', finalWatermarkedBlob, 'image.jpg');
+                        if (text) {
+                            bodyData.append('caption', text);
+                            bodyData.append('parse_mode', 'HTML');
+                        }
+                    } else {
+                        bodyData.append('text', text || '‎');
+                        bodyData.append('parse_mode', 'HTML');
+                    }
+
+                    const res = await fetch(endpoint, { method: 'POST', body: bodyData });
+                    const resData = await res.json();
+
+                    if (resData.ok) {
+                        successCount++;
+                        const msgId = resData.result.message_id;
+                        
+                        if (isAutoPin && msgId) {
+                            try {
+                                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/pinChatMessage?chat_id=${target.channel_id}&message_id=${msgId}&disable_notification=false`);
+                            } catch (pinErr) {}
+                        }
+
+                        if (target.channel_username) {
+                            const cleanUser = target.channel_username.replace('@', '');
+                            lastPostLink = `https://t.me/${cleanUser}/${msgId}`;
+                        }
+
+                        const history = getSavedHistory();
+                        history.unshift({
+                            channel_title: target.channel_title,
+                            text: text ? text.replace(/<[^>]*>?/gm, '') : (finalWatermarkedBlob ? 'ছবি ও বাটন পোস্ট' : 'রিঅ্যাকশন পোস্ট'),
+                            rawText: text,
+                            time: new Date().toLocaleString(),
+                            post_link: lastPostLink
+                        });
+                        localStorage.setItem('postbot_history', JSON.stringify(history));
+                    }
+                } catch (e) {}
+            }
+
+            if (successCount > 0) {
+                showNotification('অভিনন্দন! 🎉', `সফলভাবে ${successCount}টি চ্যানেলে পোস্ট পাবলিশ ${isAutoPin ? '& পিন ' : ''}হয়েছে!`, 'success');
+                document.getElementById('post-text').value = '';
+                removeMedia();
+                rawButtonsList = [];
+                reactionList = [];
+                setQuickTime(0, document.querySelector('.quick-time-pill'));
+                updateUIAndPreview();
+            } else {
+                showNotification('ব্যর্থ হয়েছে! 🚫', 'বট অ্যাডমিন পারমিশন ও চ্যানেল চেক করুন।', 'error');
+            }
+        }
+
+        loadChannels();
+    </script>
+</body>
+</html>
