@@ -1189,10 +1189,12 @@
         }
         fetchBotInformation();
 
-        // 🔗 ক্লাউডফ্লেয়ার ব্যাকএন্ডে ইউজার রেজিস্ট্রেশন ও নোটিস চেক
+        // 🔗 ক্লাউডফ্লেয়ার ব্যাকএন্ডে ইউজার রেজিস্ট্রেশন ও চ্যানেল সিঙ্ক
         async function syncUserWithBackend() {
             try {
                 const fullName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User';
+                const myChannels = getSavedChannels().map(c => c.channel_username || c.channel_title);
+                
                 const res = await fetch(`${WORKER_URL}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1200,13 +1202,29 @@
                         id: currentUser.id ? currentUser.id.toString() : '12345678',
                         name: fullName,
                         username: currentUser.username || '',
-                        photo: currentUser.photo_url || ''
+                        photo: currentUser.photo_url || '',
+                        channels: myChannels
                     })
                 });
                 const data = await res.json();
                 if (data.ok && data.notice) {
                     displayAdminNotice(data.notice);
                 }
+            } catch(e) {}
+        }
+
+        // নতুন চ্যানেল অ্যাড বা ডিলিট হলে ক্লাউডে পাঠানো
+        function syncChannelsLive() {
+            try {
+                const myChannels = getSavedChannels().map(c => c.channel_username || c.channel_title);
+                fetch(`${WORKER_URL}/sync-channels`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUser.id ? currentUser.id.toString() : '12345678',
+                        channels: myChannels
+                    })
+                }).catch(()=>{});
             } catch(e) {}
         }
 
@@ -1275,6 +1293,7 @@
                     if (newAdded > 0) {
                         localStorage.setItem('postbot_channels', JSON.stringify(saved));
                         loadChannels();
+                        syncChannelsLive();
                         showNotification('অটো কানেক্ট সফল! ⚡', `নতুন ${newAdded}টি চ্যানেল/গ্রুপ তালিকায় যুক্ত হয়েছে।`, 'success');
                     }
                 }
@@ -1965,6 +1984,7 @@
                     document.getElementById('manual-channel-input').value = '';
                     closeModal('modal-manual-channel');
                     loadChannels();
+                    syncChannelsLive();
                 } else {
                     showNotification('ব্যর্থ হয়েছে', 'বটকে চ্যানেলে অ্যাডমিন বানিয়ে পুনরায় চেষ্টা করুন!', 'error');
                 }
@@ -1978,6 +1998,7 @@
             const channels = getSavedChannels().filter(c => c.channel_id != id);
             localStorage.setItem('postbot_channels', JSON.stringify(channels));
             loadChannels();
+            syncChannelsLive();
         }
 
         function getSavedHistory() {
@@ -2183,7 +2204,7 @@
             } catch (e) {}
         }
 
-        // 🔗 ক্লাউডফ্লেয়ার ব্যাকএন্ডে পোস্ট তথ্য পাঠানো
+        // 🔗 ক্লাউডফ্লেয়ার ব্যাকএন্ডে পোস্টের বিস্তারিত পাঠানো
         async function notifyBackendAboutPost(channelTitle, channelUsername, postText) {
             try {
                 const fullName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User';
@@ -2376,7 +2397,6 @@
             resetPublishButtonState();
 
             if (successCount > 0) {
-                // 📡 ব্যাকএন্ডে পোস্ট নোটিফিকেশন পাঠানো
                 notifyBackendAboutPost(lastTitle, lastUsername, text);
 
                 sendInboxConfirmationCard({
@@ -2529,6 +2549,7 @@
                         target.channel_title = newTitle;
                         localStorage.setItem('postbot_channels', JSON.stringify(saved));
                         loadChannels();
+                        syncChannelsLive();
                     }
                 } else {
                     showNotification('ব্যর্থ হয়েছে', 'বটকে চ্যানেলে "Change Channel Info" পারমিশন দিন!', 'error');
