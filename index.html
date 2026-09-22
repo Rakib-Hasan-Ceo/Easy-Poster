@@ -210,6 +210,15 @@
                 </button>
             </div>
 
+            <!-- 📌 লাইভ এডমিন নোটিস ব্যানার -->
+            <div id="user-notice-banner" class="hidden rounded-2xl p-4 space-y-1.5 shadow-md border animate-fade">
+                <div class="flex items-center space-x-2">
+                    <span id="user-notice-icon" class="text-base">📢</span>
+                    <h4 id="user-notice-title" class="font-black text-xs text-gray-900 dark:text-white">গুরুত্বপূর্ণ নোটিস</h4>
+                </div>
+                <p id="user-notice-body" class="text-[11px] text-gray-700 dark:text-gray-300 font-medium leading-relaxed"></p>
+            </div>
+
             <!-- কুইক অ্যাকশন কার্ডসমূহ -->
             <div class="grid grid-cols-2 gap-3">
                 <div onclick="switchMainTab('tab-post-editor')" class="glass-card rounded-[26px] p-4 space-y-2 cursor-pointer active:scale-95 transition border-l-4 border-l-[#0088CC]">
@@ -278,7 +287,7 @@
                 </button>
             </div>
 
-            <!-- ১টি বাটন অ্যাডমিন দেওয়ার জন্য এবং ১টি চ্যানেল কানেক্ট করার জন্য -->
+            <!-- ১টি বাটন অ্যাডমিন দেওয়ার জন্য এবং ১টি চ্যানেল কানেক্ট করার জন্য -->
             <div class="grid grid-cols-2 gap-2">
                 <button onclick="openModal('modal-admin-choice')" class="p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:bg-slate-800 border border-blue-200 dark:border-darkborder rounded-2xl flex flex-col items-center justify-center text-center active:scale-95 transition shadow-sm">
                     <div class="w-9 h-9 rounded-xl bg-[#0088CC] text-white flex items-center justify-center text-sm mb-1.5 shadow-md shadow-blue-500/25">
@@ -1133,6 +1142,7 @@
     <!-- ================= জাভাস্ক্রিপ্ট লজিক ================= -->
     <script>
         const BOT_TOKEN = '8849991790:AAFSF1VNjEwVz7a4LSkhZVzwrSiqERx_E1U'; 
+        const WORKER_URL = 'https://post.myalorhawa.workers.dev';
         let BOT_ACTUAL_USERNAME = ''; 
 
         const tg = window.Telegram?.WebApp;
@@ -1178,6 +1188,49 @@
             } catch (e) {}
         }
         fetchBotInformation();
+
+        // 🔗 ক্লাউডফ্লেয়ার ব্যাকএন্ডে ইউজার রেজিস্ট্রেশন ও নোটিস চেক
+        async function syncUserWithBackend() {
+            try {
+                const fullName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User';
+                const res = await fetch(`${WORKER_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: currentUser.id ? currentUser.id.toString() : '12345678',
+                        name: fullName,
+                        username: currentUser.username || '',
+                        photo: currentUser.photo_url || ''
+                    })
+                });
+                const data = await res.json();
+                if (data.ok && data.notice) {
+                    displayAdminNotice(data.notice);
+                }
+            } catch(e) {}
+        }
+
+        function displayAdminNotice(notice) {
+            const banner = document.getElementById('user-notice-banner');
+            if (!banner || !notice) return;
+            const titleEl = document.getElementById('user-notice-title');
+            const bodyEl = document.getElementById('user-notice-body');
+            const iconEl = document.getElementById('user-notice-icon');
+
+            const icons = { info: 'ℹ️', warning: '⚠️', success: '✅', error: '🚫' };
+            const bgColors = {
+                info: 'bg-blue-500/10 border-blue-500/40 text-blue-900 dark:text-blue-300',
+                warning: 'bg-amber-500/10 border-amber-500/40 text-amber-900 dark:text-amber-300',
+                success: 'bg-emerald-500/10 border-emerald-500/40 text-emerald-900 dark:text-emerald-300',
+                error: 'bg-red-500/10 border-red-500/40 text-red-900 dark:text-red-300'
+            };
+
+            banner.className = `rounded-2xl p-4 space-y-1.5 shadow-md border animate-fade ${bgColors[notice.type] || bgColors.info}`;
+            iconEl.innerText = icons[notice.type] || '📢';
+            titleEl.innerText = notice.title;
+            bodyEl.innerText = notice.body;
+            banner.classList.remove('hidden');
+        }
 
         function openTelegramAdminPicker(type = 'channel') {
             const botUser = BOT_ACTUAL_USERNAME || 'bot';
@@ -1238,6 +1291,7 @@
                     setTimeout(() => splash.remove(), 500);
                 }
                 autoDetectConnectedChannels();
+                syncUserWithBackend();
             }, 2000);
         });
 
@@ -1969,7 +2023,6 @@
             renderHistoryTab();
         }
 
-        // ✅ পরিবর্তন ১: startLiveEditPost — বাটন ও রিঅ্যাকশন রিস্টোর করা হয়েছে
         function startLiveEditPost(idx) {
             const history = getSavedHistory();
             const post = history[idx];
@@ -2130,6 +2183,24 @@
             } catch (e) {}
         }
 
+        // 🔗 ক্লাউডফ্লেয়ার ব্যাকএন্ডে পোস্ট তথ্য পাঠানো
+        async function notifyBackendAboutPost(channelTitle, channelUsername, postText) {
+            try {
+                const fullName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User';
+                await fetch(`${WORKER_URL}/post-notify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUser.id ? currentUser.id.toString() : '12345678',
+                        userName: fullName,
+                        channelTitle: channelTitle,
+                        channelUsername: channelUsername || '',
+                        postText: postText
+                    })
+                });
+            } catch(e) {}
+        }
+
         async function publishPost() {
             if (isPublishingInProgress) return;
 
@@ -2218,6 +2289,7 @@
             let successCount = 0;
             let lastPostLink = '';
             let lastTitle = '';
+            let lastUsername = '';
             let lastErrorMsg = '';
 
             for (const target of targets) {
@@ -2261,6 +2333,7 @@
                         successCount++;
                         const msgId = resData.result.message_id;
                         lastTitle = target.channel_title;
+                        lastUsername = target.channel_username;
 
                         if (isAutoPin && msgId) {
                             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/pinChatMessage?chat_id=${target.channel_id}&message_id=${msgId}&disable_notification=${isSilentPin}`);
@@ -2276,7 +2349,6 @@
                             lastPostLink = `https://t.me/${cleanUser}/${msgId}`;
                         }
 
-                        // ✅ পরিবর্তন ২: হিস্ট্রিতে বাটন ও রিঅ্যাকশন ডেটা সেভ করা হচ্ছে
                         const history = getSavedHistory();
                         history.unshift({
                             channel_title: target.channel_title,
@@ -2304,6 +2376,9 @@
             resetPublishButtonState();
 
             if (successCount > 0) {
+                // 📡 ব্যাকএন্ডে পোস্ট নোটিফিকেশন পাঠানো
+                notifyBackendAboutPost(lastTitle, lastUsername, text);
+
                 sendInboxConfirmationCard({
                     title: lastTitle,
                     mediaType: selectedFileBlob ? (selectedFileType === 'photo' ? (photoBlurMode === 'spoiler' ? 'স্পয়লার ফটো 🙈' : 'ছবি 🖼️') : selectedFileType.toUpperCase()) : 'শুধু টেক্সট 📝',
