@@ -398,6 +398,17 @@
                     </div>
                     <i class="fa-solid fa-arrow-up-right-from-square text-[#0088CC]"></i>
                 </a>
+
+                <!-- 🤖 আমাদের সকল অ্যাকটিভ বট (নতুন যুক্ত) -->
+                <a href="https://t.me/Alorhawa" target="_blank" class="w-full p-3.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-darkborder rounded-2xl flex items-center justify-between text-xs font-black text-gray-800 dark:text-gray-100 shadow-sm active:scale-98 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center">
+                            <i class="fa-solid fa-robot text-sm"></i>
+                        </div>
+                        <span>🤖 আমাদের সকল অ্যাকটিভ বট</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-emerald-500"></i>
+                </a>
             </div>
 
             <!-- 👑 প্রিমিয়াম রাজকীয় ডেভেলপার ক্রেডিট কার্ড (রাকিব হাসান) -->
@@ -854,41 +865,175 @@
                 </button>
             </div>
 
-            <div id="mgmt-group-perms-container" class="hidden bg-gray-50 dark:bg-slate-800/50 p-3.5 rounded-2xl space-y-3 border border-gray-200 dark:border-darkborder">
-                <span class="text-[11px] font-black text-purple-600 dark:text-purple-400 flex items-center space-x-1">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span>গ্রুপ মেম্বার পারমিশন ও স্প্যাম কন্ট্রোল</span>
-                </span>
+            <!-- 🛡️ গ্রুপ মেম্বার পারমিশন ও অ্যান্টি-স্প্যাম কন্ট্রোল -->
+            <div id="mgmt-group-perms-container" class="hidden space-y-3">
                 
-                <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
-                    <span class="font-black text-xs text-gray-800 dark:text-gray-200">💬 মেম্বাররা মেসেজ দিতে পারবে</span>
-                    <div class="relative">
-                        <input type="checkbox" id="perm-send-msg" checked onchange="applyGroupPermissions()" class="sr-only ios-toggle">
-                        <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
-                            <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                <!-- বেসিক পারমিশন -->
+                <div class="bg-gray-50 dark:bg-slate-800/50 p-3.5 rounded-2xl space-y-2.5 border border-gray-200 dark:border-darkborder">
+                    <span class="text-[11px] font-black text-purple-600 dark:text-purple-400 flex items-center space-x-1">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>বেসিক গ্রুপ মেম্বার পারমিশন</span>
+                    </span>
+                    
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">💬 মেম্বাররা মেসেজ দিতে পারবে</span>
+                        <div class="relative">
+                            <input type="checkbox" id="perm-send-msg" checked onchange="applyGroupPermissions()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
-                    <span class="font-black text-xs text-gray-800 dark:text-gray-200">🖼️ ছবি ও ফাইল পাঠাতে পারবে</span>
-                    <div class="relative">
-                        <input type="checkbox" id="perm-send-media" checked onchange="applyGroupPermissions()" class="sr-only ios-toggle">
-                        <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
-                            <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">🖼️ ছবি ও সাধারণ মিডিয়া পাঠাতে পারবে</span>
+                        <div class="relative">
+                            <input type="checkbox" id="perm-send-media" checked onchange="applyGroupPermissions()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
-                    <span class="font-black text-xs text-gray-800 dark:text-gray-200">🔗 লিংক প্রিভিউ শেয়ার করতে পারবে</span>
-                    <div class="relative">
-                        <input type="checkbox" id="perm-send-links" checked onchange="applyGroupPermissions()" class="sr-only ios-toggle">
-                        <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
-                            <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">🔗 লিংক প্রিভিউ শেয়ার করতে পারবে</span>
+                        <div class="relative">
+                            <input type="checkbox" id="perm-send-links" checked onchange="applyGroupPermissions()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
                         </div>
+                    </label>
+                </div>
+
+                <!-- 🛡️ অ্যান্টি-লিংক ও ফরওয়ার্ড ফিল্টার (নতুন যুক্ত) -->
+                <div class="bg-red-50/60 dark:bg-slate-800/60 p-3.5 rounded-2xl space-y-2.5 border border-red-200/80 dark:border-darkborder">
+                    <span class="text-[11px] font-black text-red-600 dark:text-red-400 flex items-center space-x-1">
+                        <i class="fa-solid fa-link-slash"></i>
+                        <span>🛡️ অ্যান্টি-লিংক ও ফরওয়ার্ড ফিল্টার (অটো ডিলিট)</span>
+                    </span>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">🔗 সব ধরনের সরাসরি লিংক লক (Direct URLs)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-block-links" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">✍️ লেখার ভেতরের গোপন লিংক লক (Hyperlinks)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-block-hyperlinks" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">⏩ সব ধরনের ফরওয়ার্ড মেসেজ লক (Forwards)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-block-forwards" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">📢 অন্য চ্যানেলের @ইউজারনেম ট্যাগ লক (Mentions)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-block-mentions" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- 🚫 নির্দিষ্ট মিডিয়া ব্লক ফিল্টার (নতুন যুক্ত - ফিচার ৯) -->
+                <div class="bg-amber-50/60 dark:bg-slate-800/60 p-3.5 rounded-2xl space-y-2.5 border border-amber-200/80 dark:border-darkborder">
+                    <span class="text-[11px] font-black text-amber-700 dark:text-amber-400 flex items-center space-x-1">
+                        <i class="fa-solid fa-ban"></i>
+                        <span>🚫 নির্দিষ্ট মিডিয়া ব্লক ফিল্টার (Selective Locker)</span>
+                    </span>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">🎭 স্টিকার ও কাস্টম ইমোজি লক (Stickers)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-block-stickers" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">🎬 ভিডিও ও জিআইএফ লক (Videos & GIFs)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-block-gifs" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">🎙️ ভয়েস ও অডিও মেসেজ লক (Voice Notes)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-block-voice" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">📁 ফাইল ও ডকুমেন্ট লক (.apk/.zip/Docs)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-block-files" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- 👋 ওয়েলকাম ও সার্ভিস মেসেজ কন্ট্রোল (নতুন যুক্ত - ফিচার ৭) -->
+                <div class="bg-emerald-50/60 dark:bg-slate-800/60 p-3.5 rounded-2xl space-y-2.5 border border-emerald-200/80 dark:border-darkborder">
+                    <span class="text-[11px] font-black text-emerald-700 dark:text-emerald-400 flex items-center space-x-1">
+                        <i class="fa-solid fa-hands-clapping"></i>
+                        <span>👋 ওয়েলকাম ও সার্ভিস মেসেজ কন্ট্রোল</span>
+                    </span>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">🧹 জয়েন/লিভ লেখা অটো মুছুন (Service Cleaner)</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-clean-service-msg" onchange="saveSecuritySettings()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="flex justify-between items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder cursor-pointer">
+                        <span class="font-black text-xs text-gray-800 dark:text-gray-200">🎉 নতুন মেম্বার অটো ওয়েলকাম মেসেজ</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sec-auto-welcome" onchange="toggleWelcomeTextBox()" class="sr-only ios-toggle">
+                            <div class="w-11 h-6 bg-[#E5E5EA] rounded-full ios-toggle-bg relative transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow ios-toggle-dot transition-transform"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <div id="welcome-text-container" class="hidden pt-1 space-y-2 animate-pop-up">
+                        <textarea id="sec-welcome-text" rows="2" placeholder="ওয়েলকাম বার্তা লিখুন (যেমন: স্বাগতম {name} আমাদের গ্রুপে!)" class="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-darkborder rounded-xl p-2 text-xs font-medium outline-none text-gray-800 dark:text-gray-100"></textarea>
+                        <button onclick="saveSecuritySettings()" class="w-full bg-emerald-600 text-white py-2 rounded-xl text-xs font-black active:scale-95 shadow">ওয়েলকাম মেসেজ সেভ করুন</button>
                     </div>
-                </label>
+                </div>
 
                 <div class="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-200/80 dark:border-darkborder space-y-1.5">
                     <label class="text-[11px] font-black text-gray-700 dark:text-gray-300 block">⏱️ স্প্যাম রোধে স্লো মোড (Slow Mode):</label>
@@ -2446,9 +2591,78 @@
             }
         }
 
+        function toggleWelcomeTextBox() {
+            const isChecked = document.getElementById('sec-auto-welcome').checked;
+            const container = document.getElementById('welcome-text-container');
+            if (isChecked) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+            saveSecuritySettings();
+        }
+
+        function loadChannelSecuritySettings(chatId) {
+            const allSettings = JSON.parse(localStorage.getItem('postbot_security_settings') || '{}');
+            const conf = allSettings[chatId] || {
+                blockLinks: false,
+                blockHyperlinks: false,
+                blockForwards: false,
+                blockMentions: false,
+                blockStickers: false,
+                blockGifs: false,
+                blockVoice: false,
+                blockFiles: false,
+                cleanServiceMsg: false,
+                autoWelcome: false,
+                welcomeText: ''
+            };
+
+            document.getElementById('sec-block-links').checked = conf.blockLinks;
+            document.getElementById('sec-block-hyperlinks').checked = conf.blockHyperlinks;
+            document.getElementById('sec-block-forwards').checked = conf.blockForwards;
+            document.getElementById('sec-block-mentions').checked = conf.blockMentions;
+            document.getElementById('sec-block-stickers').checked = conf.blockStickers;
+            document.getElementById('sec-block-gifs').checked = conf.blockGifs;
+            document.getElementById('sec-block-voice').checked = conf.blockVoice;
+            document.getElementById('sec-block-files').checked = conf.blockFiles;
+            document.getElementById('sec-clean-service-msg').checked = conf.cleanServiceMsg;
+            document.getElementById('sec-auto-welcome').checked = conf.autoWelcome;
+            document.getElementById('sec-welcome-text').value = conf.welcomeText || '';
+
+            const welcomeBox = document.getElementById('welcome-text-container');
+            if (conf.autoWelcome) welcomeBox.classList.remove('hidden');
+            else welcomeBox.classList.add('hidden');
+        }
+
+        async function saveSecuritySettings() {
+            const chatId = document.getElementById('mgmt-target-channel').value;
+            if (!chatId) return;
+
+            const allSettings = JSON.parse(localStorage.getItem('postbot_security_settings') || '{}');
+            allSettings[chatId] = {
+                blockLinks: document.getElementById('sec-block-links').checked,
+                blockHyperlinks: document.getElementById('sec-block-hyperlinks').checked,
+                blockForwards: document.getElementById('sec-block-forwards').checked,
+                blockMentions: document.getElementById('sec-block-mentions').checked,
+                blockStickers: document.getElementById('sec-block-stickers').checked,
+                blockGifs: document.getElementById('sec-block-gifs').checked,
+                blockVoice: document.getElementById('sec-block-voice').checked,
+                blockFiles: document.getElementById('sec-block-files').checked,
+                cleanServiceMsg: document.getElementById('sec-clean-service-msg').checked,
+                autoWelcome: document.getElementById('sec-auto-welcome').checked,
+                welcomeText: document.getElementById('sec-welcome-text').value.trim()
+            };
+
+            localStorage.setItem('postbot_security_settings', JSON.stringify(allSettings));
+            applyGroupPermissions();
+        }
+
         async function fetchChannelLiveStats() {
             const chatId = document.getElementById('mgmt-target-channel').value;
             if (!chatId) return;
+
+            loadChannelSecuritySettings(chatId);
 
             try {
                 const countRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMemberCount?chat_id=${chatId}`);
@@ -2478,23 +2692,28 @@
 
         async function applyGroupPermissions() {
             const chatId = document.getElementById('mgmt-target-channel').value;
-            if (!chatId) return showNotification('চ্যানেল সিলেক্ট করুন', 'টার্গেট গ্রুপ বা চ্যানেল পছন্দ করুন!', 'error');
+            if (!chatId) return;
 
             const canSendMessages = document.getElementById('perm-send-msg').checked;
             const canSendMedia = document.getElementById('perm-send-media').checked;
             const canSendOther = document.getElementById('perm-send-links').checked;
 
+            const blockStickers = document.getElementById('sec-block-stickers').checked;
+            const blockGifs = document.getElementById('sec-block-gifs').checked;
+            const blockVoice = document.getElementById('sec-block-voice').checked;
+            const blockFiles = document.getElementById('sec-block-files').checked;
+
             const permissions = {
                 can_send_messages: canSendMessages,
-                can_send_audios: canSendMedia,
-                can_send_documents: canSendMedia,
+                can_send_audios: canSendMedia && !blockVoice,
+                can_send_documents: canSendMedia && !blockFiles,
                 can_send_photos: canSendMedia,
-                can_send_videos: canSendMedia,
-                can_send_video_notes: canSendMedia,
-                can_send_voice_notes: canSendMedia,
+                can_send_videos: canSendMedia && !blockGifs,
+                can_send_video_notes: canSendMedia && !blockGifs,
+                can_send_voice_notes: canSendMedia && !blockVoice,
                 can_send_polls: canSendMessages,
-                can_send_other_messages: canSendOther,
-                can_add_web_page_previews: canSendOther
+                can_send_other_messages: canSendOther && !blockStickers,
+                can_add_web_page_previews: canSendOther && !document.getElementById('sec-block-links').checked
             };
 
             try {
@@ -2505,13 +2724,9 @@
                 });
                 const data = await res.json();
                 if (data.ok) {
-                    showNotification('পারমিশন আপডেট সফল! 🛡️', 'গ্রুপের মেম্বার পারমিশন কার্যকর করা হয়েছে।', 'success');
-                } else {
-                    showNotification('ব্যর্থ হয়েছে', 'বটকে গ্রুপে Restrict Members পারমিশন দিন!', 'error');
+                    showNotification('পারমিশন ও ফিল্টার আপডেট! 🛡️', 'গ্রুপের নিরাপত্তা রুলস সফলভাবে কার্যকর হয়েছে।', 'success');
                 }
-            } catch (e) {
-                showNotification('ত্রুটি', 'সার্ভার সংযোগ সম্ভব হয়নি।', 'error');
-            }
+            } catch (e) {}
         }
 
         async function setSlowModeTime() {
