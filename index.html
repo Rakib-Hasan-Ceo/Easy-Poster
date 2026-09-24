@@ -399,7 +399,7 @@
                     <i class="fa-solid fa-arrow-up-right-from-square text-[#0088CC]"></i>
                 </a>
 
-                <!-- 🤖 আমাদের সকল অ্যাকটিভ বট (নতুন যুক্ত) -->
+                <!-- 🤖 আমাদের সকল অ্যাকটিভ বট -->
                 <a href="https://t.me/Alorhawa" target="_blank" class="w-full p-3.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-darkborder rounded-2xl flex items-center justify-between text-xs font-black text-gray-800 dark:text-gray-100 shadow-sm active:scale-98 transition">
                     <div class="flex items-center space-x-3">
                         <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center">
@@ -865,10 +865,96 @@
                 </button>
             </div>
 
+            <!-- 👑 নতুন অ্যাডমিন নিয়োগ ও পারমিশন কন্ট্রোল (নতুন ফিচার) -->
+            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 dark:bg-slate-800/80 p-4 rounded-2xl space-y-3 border border-purple-200/80 dark:border-darkborder">
+                <span class="text-[11px] font-black text-purple-700 dark:text-purple-400 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-crown text-amber-500"></i>
+                    <span>👑 অ্যাডমিন নিয়োগ ও পারমিশন ম্যানেজমেন্ট</span>
+                </span>
+
+                <div class="space-y-2">
+                    <input type="number" id="promote-target-userid" placeholder="মেম্বারের টেলিগ্রাম ইউজার আইডি লিখুন..." class="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-darkborder rounded-xl p-2.5 text-xs font-black outline-none text-gray-800 dark:text-gray-100">
+                    <input type="text" id="promote-custom-title" placeholder="কাস্টম পদবী (যেমন: Moderator / Co-Owner)..." class="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-darkborder rounded-xl p-2.5 text-xs font-bold outline-none text-gray-800 dark:text-gray-100">
+                </div>
+
+                <!-- পারমিশন চেকলিস্ট -->
+                <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-gray-200/80 dark:border-darkborder space-y-2">
+                    <label class="text-[10px] font-black text-gray-500 uppercase block mb-1">অ্যাডমিনকে যেসব ক্ষমতা দিতে চান:</label>
+                    
+                    <div class="grid grid-cols-2 gap-2 text-[11px] font-bold text-gray-800 dark:text-gray-200">
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" id="p-perm-pin" checked class="w-4 h-4 accent-purple-600 rounded">
+                            <span>📌 পিন মেসেজ</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" id="p-perm-delete" checked class="w-4 h-4 accent-purple-600 rounded">
+                            <span>🗑️ মেসেজ মুছা</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" id="p-perm-restrict" checked class="w-4 h-4 accent-purple-600 rounded">
+                            <span>🚫 মিউট ও ব্যান</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" id="p-perm-invite" checked class="w-4 h-4 accent-purple-600 rounded">
+                            <span>🔗 ইনভাইট লিংক</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" id="p-perm-info" class="w-4 h-4 accent-purple-600 rounded">
+                            <span>⚙️ তথ্য বদল</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" id="p-perm-promote" class="w-4 h-4 accent-purple-600 rounded">
+                            <span>👑 অ্যাডমিন যোগ</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button onclick="executePromoteAction('promote')" class="bg-purple-600 hover:bg-purple-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md active:scale-95 transition">
+                        🟢 অ্যাডমিন বানান
+                    </button>
+                    <button onclick="executePromoteAction('demote')" class="bg-gray-200 dark:bg-slate-700 text-red-500 dark:text-red-400 font-black py-2.5 rounded-xl text-xs active:scale-95 transition">
+                        🔴 অ্যাডমিন বাতিল
+                    </button>
+                </div>
+            </div>
+
+            <!-- 👤 সরাসরি মেম্বার মডারেশন হাব (Mute/Ban/Unmute) -->
+            <div class="bg-gradient-to-r from-red-50 to-pink-50 dark:bg-slate-800/70 p-4 rounded-2xl space-y-3 border border-red-200/60 dark:border-darkborder">
+                <span class="text-[11px] font-black text-red-600 dark:text-red-400 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-gavel"></i>
+                    <span>সরাসরি মেম্বার অ্যাকশন (Mute / Ban / Kick)</span>
+                </span>
+
+                <input type="number" id="mod-target-userid" placeholder="টার্গেট ইউজারের টেলিগ্রাম আইডি লিখুন..." class="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-darkborder rounded-xl p-2.5 text-xs font-black outline-none text-gray-800 dark:text-gray-100">
+
+                <div class="grid grid-cols-3 gap-1.5 text-xs font-black">
+                    <button type="button" onclick="selectModAction('mute')" id="mod-act-mute" class="p-2 rounded-xl bg-red-500 text-white text-center shadow">🔇 মিউট</button>
+                    <button type="button" onclick="selectModAction('unmute')" id="mod-act-unmute" class="p-2 rounded-xl bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-darkborder text-center">🔊 আনমিউট</button>
+                    <button type="button" onclick="selectModAction('ban')" id="mod-act-ban" class="p-2 rounded-xl bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-darkborder text-center">🚫 ব্যান</button>
+                </div>
+
+                <div id="mod-duration-box" class="space-y-1">
+                    <label class="text-[10px] font-black text-gray-500 block">মিউটের সময়সীমা:</label>
+                    <select id="mod-duration-select" class="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-darkborder rounded-xl p-2 text-xs font-black outline-none text-gray-800 dark:text-gray-100">
+                        <option value="600">১০ মিনিট</option>
+                        <option value="3600">১ ঘণ্টা</option>
+                        <option value="86400">১ দিন (২৪ ঘণ্টা)</option>
+                        <option value="604800">৭ দিন</option>
+                        <option value="0">আজীবনের জন্য (Permanent)</option>
+                    </select>
+                </div>
+
+                <input type="text" id="mod-action-reason" placeholder="কারণ (যেমন: স্প্যামিং / গালিগালাজ)..." class="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-darkborder rounded-xl p-2.5 text-xs font-bold outline-none text-gray-800 dark:text-gray-100">
+
+                <button onclick="executeUserModeration()" class="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white font-black py-2.5 rounded-xl text-xs shadow-md active:scale-95 transition">
+                    অ্যাকশন কার্যকর করুন ⚡
+                </button>
+            </div>
+
             <!-- 🛡️ গ্রুপ মেম্বার পারমিশন ও অ্যান্টি-স্প্যাম কন্ট্রোল -->
             <div id="mgmt-group-perms-container" class="hidden space-y-3">
                 
-                <!-- বেসিক পারমিশন -->
                 <div class="bg-gray-50 dark:bg-slate-800/50 p-3.5 rounded-2xl space-y-2.5 border border-gray-200 dark:border-darkborder">
                     <span class="text-[11px] font-black text-purple-600 dark:text-purple-400 flex items-center space-x-1">
                         <i class="fa-solid fa-shield-halved"></i>
@@ -906,7 +992,7 @@
                     </label>
                 </div>
 
-                <!-- 🛡️ অ্যান্টি-লিংক ও ফরওয়ার্ড ফিল্টার (নতুন যুক্ত) -->
+                <!-- 🛡️ অ্যান্টি-লিংক ও ফরওয়ার্ড ফিল্টার -->
                 <div class="bg-red-50/60 dark:bg-slate-800/60 p-3.5 rounded-2xl space-y-2.5 border border-red-200/80 dark:border-darkborder">
                     <span class="text-[11px] font-black text-red-600 dark:text-red-400 flex items-center space-x-1">
                         <i class="fa-solid fa-link-slash"></i>
@@ -954,7 +1040,7 @@
                     </label>
                 </div>
 
-                <!-- 🚫 নির্দিষ্ট মিডিয়া ব্লক ফিল্টার (নতুন যুক্ত - ফিচার ৯) -->
+                <!-- 🚫 নির্দিষ্ট মিডিয়া ব্লক ফিল্টার -->
                 <div class="bg-amber-50/60 dark:bg-slate-800/60 p-3.5 rounded-2xl space-y-2.5 border border-amber-200/80 dark:border-darkborder">
                     <span class="text-[11px] font-black text-amber-700 dark:text-amber-400 flex items-center space-x-1">
                         <i class="fa-solid fa-ban"></i>
@@ -1002,7 +1088,7 @@
                     </label>
                 </div>
 
-                <!-- 👋 ওয়েলকাম ও সার্ভিস মেসেজ কন্ট্রোল (নতুন যুক্ত - ফিচার ৭) -->
+                <!-- 👋 ওয়েলকাম ও সার্ভিস মেসেজ কন্ট্রোল -->
                 <div class="bg-emerald-50/60 dark:bg-slate-800/60 p-3.5 rounded-2xl space-y-2.5 border border-emerald-200/80 dark:border-darkborder">
                     <span class="text-[11px] font-black text-emerald-700 dark:text-emerald-400 flex items-center space-x-1">
                         <i class="fa-solid fa-hands-clapping"></i>
@@ -1313,6 +1399,7 @@
         let autoDeleteMinutes = 0;
         let editingPostInfo = null;
         let isPublishingInProgress = false;
+        let selectedModActionType = 'mute';
 
         function ensureValidUrl(url) {
             if (!url) return '';
@@ -2853,6 +2940,119 @@
                 }
             } catch (e) {
                 showNotification('ত্রুটি', 'সার্ভার সংযোগ সম্ভব হয়নি।', 'error');
+            }
+        }
+
+        // ⚡ ইউজার মডারেশন অ্যাকশন সিলেক্টর (মিউট/ব্যান/আনমিউট)
+        function selectModAction(action) {
+            selectedModActionType = action;
+            ['mute', 'unmute', 'ban'].forEach(act => {
+                const btn = document.getElementById(`mod-act-${act}`);
+                if (act === action) {
+                    btn.className = 'p-2 rounded-xl bg-red-500 text-white text-center shadow';
+                } else {
+                    btn.className = 'p-2 rounded-xl bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-darkborder text-center';
+                }
+            });
+
+            const durBox = document.getElementById('mod-duration-box');
+            if (action === 'mute') durBox.classList.remove('hidden');
+            else durBox.classList.add('hidden');
+        }
+
+        // ⚡ অ্যাপ থেকে সরাসরি মিউট/ব্যান এক্সিকিউটর
+        async function executeUserModeration() {
+            const chatId = document.getElementById('mgmt-target-channel').value;
+            const targetId = document.getElementById('mod-target-userid').value.trim();
+            const reason = document.getElementById('mod-action-reason').value.trim();
+            const durSelect = document.getElementById('mod-duration-select');
+            const durationSec = parseInt(durSelect.value, 10);
+            const durationText = durSelect.options[durSelect.selectedIndex].text;
+
+            if (!chatId) return showNotification('চ্যানেল নির্বাচন করুন', 'টার্গেট গ্রুপ বেছে নিন!', 'error');
+            if (!targetId) return showNotification('আইডি দিন', 'টার্গেট ইউজারের টেলিগ্রাম আইডি লিখুন!', 'error');
+
+            const adminName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'Admin';
+
+            try {
+                showNotification('প্রক্রিয়াধীন... ⏳', 'সার্ভারে রিকোয়েস্ট পাঠানো হচ্ছে...', 'success');
+                const res = await fetch(`${WORKER_URL}/admin-user-action`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chatId,
+                        targetId,
+                        action: selectedModActionType,
+                        durationSec,
+                        durationText,
+                        reason,
+                        adminName
+                    })
+                });
+
+                const data = await res.json();
+                if (data.ok) {
+                    showNotification('সফল হয়েছে! ⚡', `ইউজারের বিরুদ্ধে ${selectedModActionType.toUpperCase()} অ্যাকশন কার্যকর হয়েছে এবং গ্রুপে নোটিস পাঠানো হয়েছে।`, 'success');
+                    document.getElementById('mod-target-userid').value = '';
+                    document.getElementById('mod-action-reason').value = '';
+                } else {
+                    showNotification('ব্যর্থ হয়েছে', data.description || data.error || 'বটকে গ্রুপে প্রয়োজনীয় পারমিশন দিন!', 'error');
+                }
+            } catch(e) {
+                showNotification('ত্রুটি', 'সার্ভার সংযোগ করা যায়নি।', 'error');
+            }
+        }
+
+        // 👑 অ্যাডমিন নিয়োগ ও পদবী পরিবর্তন এক্সিকিউটর
+        async function executePromoteAction(actionType) {
+            const chatId = document.getElementById('mgmt-target-channel').value;
+            const targetId = document.getElementById('promote-target-userid').value.trim();
+            const customTitle = document.getElementById('promote-custom-title').value.trim() || 'Admin';
+
+            if (!chatId) return showNotification('চ্যানেল নির্বাচন করুন', 'টার্গেট গ্রুপ বা চ্যানেল বেছে নিন!', 'error');
+            if (!targetId) return showNotification('আইডি দিন', 'টার্গেট মেম্বারের ইউজার আইডি লিখুন!', 'error');
+
+            const canPin = document.getElementById('p-perm-pin').checked;
+            const canDelete = document.getElementById('p-perm-delete').checked;
+            const canRestrict = document.getElementById('p-perm-restrict').checked;
+            const canInvite = document.getElementById('p-perm-invite').checked;
+            const canInfo = document.getElementById('p-perm-info').checked;
+            const canPromote = document.getElementById('p-perm-promote').checked;
+
+            const adminName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'Admin';
+
+            try {
+                showNotification('প্রক্রিয়াধীন... ⏳', 'অ্যাডমিন পারমিশন আপডেট হচ্ছে...', 'success');
+                const res = await fetch(`${WORKER_URL}/promote-admin-action`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chatId,
+                        targetId,
+                        actionType,
+                        customTitle,
+                        adminName,
+                        permissions: {
+                            canPin: actionType === 'promote' ? canPin : false,
+                            canDelete: actionType === 'promote' ? canDelete : false,
+                            canRestrict: actionType === 'promote' ? canRestrict : false,
+                            canInvite: actionType === 'promote' ? canInvite : false,
+                            canInfo: actionType === 'promote' ? canInfo : false,
+                            canPromote: actionType === 'promote' ? canPromote : false
+                        }
+                    })
+                });
+
+                const data = await res.json();
+                if (data.ok) {
+                    showNotification('সফল হয়েছে! 👑', actionType === 'promote' ? 'মেম্বারকে সফলভাবে অ্যাডমিন পদে উন্নীত করা হয়েছে!' : 'অ্যাডমিন পারমিশন বাতিল করা হয়েছে।', 'success');
+                    document.getElementById('promote-target-userid').value = '';
+                    document.getElementById('promote-custom-title').value = '';
+                } else {
+                    showNotification('ব্যর্থ হয়েছে', data.description || data.error || 'বটকে গ্রুপে "Add New Admins" পারমিশন দিন!', 'error');
+                }
+            } catch(e) {
+                showNotification('ত্রুটি', 'সার্ভার সংযোগ করা যায়নি।', 'error');
             }
         }
 
